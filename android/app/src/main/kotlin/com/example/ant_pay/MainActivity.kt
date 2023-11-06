@@ -1,4 +1,4 @@
-package com.example.ant_pay
+package com.ant_pay.www
 
 import io.flutter.embedding.android.FlutterActivity
 

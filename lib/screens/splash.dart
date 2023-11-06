@@ -11,30 +11,31 @@ class Splash extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Color(0xFF2CA580),
-        body: SingleChildScrollView(
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(stickers3), fit: BoxFit.cover),
-            ),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 25,
-                ),
-                Image.asset(splash_ant, height: 155, width: 155),
-                Image.asset(splash_img, height: 292, width: 292),
-                SizedBox(
-                  height: 15,
-                ),
-                CustomText(text: "Welcome to Convenience"),
-                SizedBox(
-                  height: 25,
-                ),
-                GradientButton(
+    return Scaffold(
+      backgroundColor: Color(0xFF2CA580),
+      body: SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage(stickers3), fit: BoxFit.cover),
+          ),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 25,
+              ),
+              Image.asset(splash_ant, height: 155, width: 155),
+              Image.asset(splash_img, height: 292, width: 292),
+              SizedBox(
+                height: 15,
+              ),
+              CustomText(text: "Welcome to Convenience"),
+              SizedBox(
+                height: 25,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: GradientButton(
                   title: "Sign Up",
                   textClr: Colors.white,
                   clrs: [appColor, appColor],
@@ -42,22 +43,22 @@ class Splash extends StatelessWidget {
                     changeScreen(context, AuthMain());
                   },
                 ),
-                SizedBox(
-                  height: 50,
+              ),
+              SizedBox(
+                height: 50,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 50, right: 50),
+                child: CustomText(
+                  text:
+                      "By tapping Sign Up you agree to our Terms of service and privacy policy ",
+                  textAlign: TextAlign.center,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 50, right: 50),
-                  child: CustomText(
-                    text:
-                        "By tapping Sign Up you agree to our Terms of service and privacy policy ",
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-              ],
-            ),
+              ),
+              SizedBox(
+                height: 50,
+              ),
+            ],
           ),
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:ant_pay/constants/app_colors.dart';
 import 'package:ant_pay/constants/app_images.dart';
+import 'package:ant_pay/constants/app_strings.dart';
 import 'package:ant_pay/providers/user_controller.dart';
 import 'package:ant_pay/utils/call_utilities.dart';
 import 'package:ant_pay/utils/permissions.dart';
@@ -26,7 +27,7 @@ class _CallScreenState extends State<CallScreen> {
     userController = Provider.of<UserController>(context, listen: false);
     callhistory = FirebaseFirestore.instance
         .collection("callhistorys")
-        .doc(userController.getCurrentUser.uid)
+        .doc(userController.getCurrentUser.uid!.toLowerCase())
         .collection("callhistory")
         .snapshots();
   }
@@ -56,21 +57,22 @@ class _CallScreenState extends State<CallScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      height: 30,
+                      height: titleBarOffset,
                     ),
                     Row(
                       children: [
                         SizedBox(
                           width: 15,
                         ),
-                        Icon(
+                        /*Icon(
                           Icons.arrow_back_ios_new,
                           color: Colors.white,
-                        ),
+                        ),*/
                         Spacer(),
                         CustomText(
                           text: "Call",
                           color: Colors.white,
+                          size: 16,
                         ),
                         Spacer(),
                         SizedBox(
@@ -158,58 +160,65 @@ class _CallScreenState extends State<CallScreen> {
                       gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [gd1, gd2, gd3, gd4, gd5],
+                          colors: [appColor, gd2, gd3, gd4, gd5],
                           stops: [0.02, 0.2, 0.6, 0.8, 1.0]),
                     ),
                     child: StreamBuilder<QuerySnapshot>(
                         stream: callhistory,
                         builder: (context, snapshot) {
                           return snapshot.hasData
-                              ? ListView.builder(
-                                  itemCount: snapshot.data!.docs.length,
-                                  itemBuilder: (context, index) {
-                                    User me = User(
-                                        uid: userController.getCurrentUser.uid!,
-                                        name: userController
-                                            .getCurrentUser.displayName!,
-                                        avatar: userController
-                                            .getCurrentUser.avatarUrl);
-                                    User recipient = snapshot.data!.docs[index]
-                                            ["has_dialled"]
-                                        ? User(
-                                            uid: snapshot.data!.docs[index]
-                                                ["receiver_id"],
-                                            name: snapshot.data!.docs[index]
-                                                ["receiver_name"],
-                                            avatar: snapshot.data!.docs[index]
-                                                ["receiver_pic"])
-                                        : User(
-                                            uid: snapshot.data!.docs[index]
-                                                ["caller_id"],
-                                            name: snapshot.data!.docs[index]
-                                                ["caller_name"],
-                                            avatar: snapshot.data!.docs[index]
-                                                ["caller_pic"]);
-                                    return ListTile(
-                                      onTap: () async {
-                                        await Permissions
-                                                .cameraAndMicrophonePermissionsGranted()
-                                            ? CallUtils.dialAudio(
-                                                from: me,
-                                                to: recipient,
-                                                context: context)
-                                            : {};
-                                      },
-                                      leading: Container(
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Color(0xff6E01CE),
-                                                width: 3),
-                                            shape: BoxShape.circle,
-                                            image: DecorationImage(
-                                                image:
-                                                    snapshot.data!.docs[index]
+                              ? snapshot.data!.docs.isNotEmpty
+                                  ? ListView.builder(
+                                      padding: EdgeInsets.all(0),
+                                      itemCount: snapshot.data!.docs.length,
+                                      itemBuilder: (context, index) {
+                                        User me = User(
+                                            uid: userController
+                                                .getCurrentUser.uid!
+                                                .toLowerCase(),
+                                            name: userController
+                                                .getCurrentUser.displayName!,
+                                            avatar: userController
+                                                .getCurrentUser.avatarUrl);
+                                        User recipient = snapshot.data!.docs[index]
+                                                ["has_dialled"]
+                                            ? User(
+                                                uid: snapshot.data!
+                                                    .docs[index]["receiver_id"]
+                                                    .toString()
+                                                    .toLowerCase(),
+                                                name: snapshot.data!.docs[index]
+                                                    ["receiver_name"],
+                                                avatar: snapshot.data!.docs[index]
+                                                    ["receiver_pic"])
+                                            : User(
+                                                uid: snapshot.data!.docs[index]["caller_id"]
+                                                    .toString()
+                                                    .toLowerCase(),
+                                                name: snapshot.data!.docs[index]
+                                                    ["caller_name"],
+                                                avatar: snapshot.data!.docs[index]
+                                                    ["caller_pic"]);
+                                        return ListTile(
+                                          onTap: () async {
+                                            await Permissions
+                                                    .cameraAndMicrophonePermissionsGranted()
+                                                ? CallUtils.dialAudio(
+                                                    from: me,
+                                                    to: recipient,
+                                                    context: context)
+                                                : {};
+                                          },
+                                          leading: Container(
+                                            width: 50,
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: Color(0xff6E01CE),
+                                                    width: 3),
+                                                shape: BoxShape.circle,
+                                                image: DecorationImage(
+                                                    image: snapshot.data!
+                                                                .docs[index]
                                                             ["has_dialled"]
                                                         ? NetworkImage(snapshot
                                                                 .data!
@@ -219,44 +228,46 @@ class _CallScreenState extends State<CallScreen> {
                                                                 .data!
                                                                 .docs[index]
                                                             ["caller_pic"]),
-                                                fit: BoxFit.cover)),
-                                      ),
-                                      title: snapshot.data!.docs[index]
-                                              ["has_dialled"]
-                                          ? CustomText(
-                                              text:
-                                                  "${snapshot.data!.docs[index]["receiver_name"]}")
-                                          : CustomText(
-                                              text:
-                                                  "${snapshot.data!.docs[index]["caller_name"]}"),
-                                      subtitle: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.call,
-                                            size: 15,
+                                                    fit: BoxFit.cover)),
                                           ),
-                                          SizedBox(
-                                            width: 8,
+                                          title: snapshot.data!.docs[index]
+                                                  ["has_dialled"]
+                                              ? CustomText(
+                                                  text:
+                                                      "${snapshot.data!.docs[index]["receiver_name"]}")
+                                              : CustomText(
+                                                  text:
+                                                      "${snapshot.data!.docs[index]["caller_name"]}"),
+                                          subtitle: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.call,
+                                                size: 15,
+                                              ),
+                                              SizedBox(
+                                                width: 8,
+                                              ),
+                                              CustomText(
+                                                text: snapshot.data!.docs[index]
+                                                            ["status"] ==
+                                                        "0"
+                                                    ? "Outgoing"
+                                                    : "incoming",
+                                                size: 14,
+                                              )
+                                            ],
                                           ),
-                                          CustomText(
-                                            text: snapshot.data!.docs[index]
-                                                        ["status"] ==
-                                                    "0"
-                                                ? "Outgoing"
-                                                : "incoming",
-                                            size: 14,
-                                          )
-                                        ],
-                                      ),
-                                      trailing: Builder(builder: (context) {
-                                        DateTime dateTime = snapshot
-                                            .data!.docs[index]["date"]
-                                            .toDate();
-                                        return Text(
-                                            "${dateTime.day}/${dateTime.month}/${dateTime.year}");
-                                      }),
-                                    );
-                                  })
+                                          trailing: Builder(builder: (context) {
+                                            DateTime dateTime = snapshot
+                                                .data!.docs[index]["date"]
+                                                .toDate();
+                                            return Text(
+                                                "${dateTime.day}/${dateTime.month}/${dateTime.year}");
+                                          }),
+                                        );
+                                      })
+                                  : Center(
+                                      child: Text("No call history to show"))
                               : Center(child: CircularProgressIndicator());
                         })),
               )

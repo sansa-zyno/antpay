@@ -2,7 +2,9 @@ import 'dart:developer';
 import 'package:ant_pay/constants/app_colors.dart';
 import 'package:ant_pay/screens/chat/chat_screen.dart';
 import 'package:ant_pay/providers/app_provider.dart';
+import 'package:ant_pay/widgets/custom_text.dart';
 import 'package:cometchat/cometchat_sdk.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart' hide Action;
 import 'package:provider/provider.dart';
 import 'package:ant_pay/constants/app_images.dart' as img;
@@ -30,15 +32,12 @@ class _MessagesState extends State<Messages> {
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width / 100;
-    final h = MediaQuery.of(context).size.height / 100;
     AppProvider appProvider = Provider.of<AppProvider>(context);
     return appProvider.listConversation != null && me != null
         ? appProvider.listConversation!.isNotEmpty
             ? Column(
                 children: [
                   Expanded(
-                    flex: 6,
                     child: ListView.separated(
                       padding: EdgeInsets.all(5),
                       shrinkWrap: true,
@@ -87,9 +86,9 @@ class ChatRoomListTile extends StatefulWidget {
 }
 
 class _ChatRoomListTileState extends State<ChatRoomListTile> {
-  String timesAgo = "";
+  String timesAgo = "02:30 pm";
 
-  /*String calcTimesAgo(DateTime dt) {
+  String calcTimesAgo(DateTime dt) {
     Duration dur = DateTime.now().difference(dt);
     print(dur.inHours);
     if (dur.inSeconds < 60) {
@@ -120,13 +119,13 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
       return date;
     }
     return "";
-  }*/
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    //timesAgo = calcTimesAgo(DateTime.parse(widget.dateString));
+    timesAgo = calcTimesAgo(widget.lastMessage!.sentAt!);
     setState(() {});
   }
 
@@ -144,11 +143,17 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
 
       return InkWell(
         onTap: () {
-          /* await HttpService.post("", {
-              "username": widget.receiverName,
-              "messageid": widget.chatId,
-              "message": widget.lastMessage
-            });*/
+          CometChat.markAsDelivered(widget.lastMessage!,
+              onSuccess: (String unused) {
+            debugPrint("markAsDelivered : $unused ");
+          }, onError: (CometChatException e) {
+            debugPrint("markAsDelivered unsuccessful : ${e.message} ");
+          });
+          CometChat.markAsRead(widget.lastMessage!, onSuccess: (String unused) {
+            debugPrint("markAsRead : $unused ");
+          }, onError: (CometChatException e) {
+            debugPrint("markAsRead unsuccessfull : ${e.message} ");
+          });
           widget.conversationType == ConversationType.user
               ? appProvider.getChatData(user.uid, ConversationType.user, true)
               : appProvider.getChatData(
@@ -237,27 +242,75 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                 ],
               ),
               SizedBox(width: 15),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.conversationType == ConversationType.user
-                        ? user.name
-                        : group.name,
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xff4B0973),
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 5),
-                  widget.lastMessage is TextMessage
-                      ? Builder(builder: (context) {
-                          TextMessage message =
-                              widget.lastMessage as TextMessage;
-                          return Container(
-                            width: 200,
-                            child: Row(
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Builder(builder: (context) {
+                      List Username = appProvider.contacts!.where((e) {
+                        return e["doc"]["uid"].toString().toLowerCase() ==
+                            user.uid;
+                      }).toList();
+                      return Text(
+                        widget.conversationType == ConversationType.user
+                            ? Username.isNotEmpty
+                                ? Username[0]["name"]
+                                : user.name
+                            : group.name,
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Color(0xff4B0973),
+                            fontWeight: FontWeight.bold),
+                      );
+                    }),
+                    SizedBox(height: 5),
+                    widget.lastMessage is TextMessage
+                        ? Builder(builder: (context) {
+                            TextMessage message =
+                                widget.lastMessage as TextMessage;
+
+                            return Row(
                               children: [
+                                message.readAt != null
+                                    ? Stack(
+                                        children: [
+                                          Icon(
+                                            Icons.check,
+                                            color: appColor,
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 10),
+                                            child: Icon(
+                                              Icons.check,
+                                              color: appColor,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : message.deliveredAt != null
+                                        ? Stack(
+                                            children: [
+                                              Icon(
+                                                Icons.check,
+                                                color: Colors.black54,
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 10),
+                                                child: Icon(
+                                                  Icons.check,
+                                                  color: Colors.black54,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : Icon(
+                                            Icons.check,
+                                            color: Colors.black54,
+                                          ),
+                                SizedBox(
+                                  width: 5,
+                                ),
                                 Expanded(
                                   child: Text(
                                     message.text,
@@ -269,105 +322,148 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                                   ),
                                 ),
                               ],
-                            ),
-                          );
-                        })
-                      : widget.lastMessage is CustomMessage
-                          ? Builder(builder: (context) {
-                              return Container();
-                              /* CustomMessage message =
-                                  widget.lastMessage as CustomMessage;
-                              return Container(
-                                width: 200,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Opacity(
-                                      opacity: 1,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(15),
-                                        child: message.customData != null
-                                            ? Image.network(
-                                                message.customData![
-                                                        "sticker_url"] ??
-                                                    "",
-                                                height: 60,
-                                                width: 60,
-                                              )
-                                            : Container(),
+                            );
+                          })
+                        : widget.lastMessage is CustomMessage
+                            ? Builder(builder: (context) {
+                                return Container();
+                                /* CustomMessage message =
+                                    widget.lastMessage as CustomMessage;
+                                return Container(
+                                  width: 200,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Opacity(
+                                        opacity: 1,
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(15),
+                                          child: message.customData != null
+                                              ? Image.network(
+                                                  message.customData![
+                                                          "sticker_url"] ??
+                                                      "",
+                                                  height: 60,
+                                                  width: 60,
+                                                )
+                                              : Container(),
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              );*/
-                            })
-                          : widget.lastMessage is MediaMessage
-                              ? Builder(builder: (context) {
-                                  MediaMessage mediaMessage =
-                                      widget.lastMessage as MediaMessage;
-                                  log(mediaMessage.attachment.toString());
-                                  return Container(
-                                    width: 200,
-                                    child: Row(
+                                    ],
+                                  ),
+                                );*/
+                              })
+                            : widget.lastMessage is MediaMessage
+                                ? Builder(builder: (context) {
+                                    List imageExtensions = [
+                                      "jpg",
+                                      "png",
+                                      "jpeg"
+                                    ];
+                                    MediaMessage mediaMessage =
+                                        widget.lastMessage as MediaMessage;
+                                    log(mediaMessage.attachment!.fileExtension);
+                                    return Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: [
-                                        Opacity(
-                                          opacity: 1,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            child: mediaMessage.attachment !=
-                                                        null &&
-                                                    mediaMessage.attachment!
-                                                            .fileUrl !=
-                                                        ""
-                                                ? Image.network(
-                                                    mediaMessage
-                                                        .attachment!.fileUrl
-                                                        .toString(),
-                                                    height: 60,
-                                                    width: 60,
+                                        mediaMessage.readAt != null
+                                            ? Stack(
+                                                children: [
+                                                  Icon(
+                                                    Icons.check,
+                                                    color: appColor,
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 10),
+                                                    child: Icon(
+                                                      Icons.check,
+                                                      color: appColor,
+                                                    ),
+                                                  ),
+                                                ],
+                                              )
+                                            : mediaMessage.deliveredAt != null
+                                                ? Stack(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.check,
+                                                        color: Colors.black54,
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 10),
+                                                        child: Icon(
+                                                          Icons.check,
+                                                          color: Colors.black54,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   )
-                                                : Container(),
-                                          ),
+                                                : Icon(
+                                                    Icons.check,
+                                                    color: Colors.black54,
+                                                  ),
+                                        SizedBox(
+                                          width: 5,
                                         ),
+                                        imageExtensions.contains(mediaMessage
+                                                .attachment!.fileExtension)
+                                            ? Icon(Icons.photo)
+                                            : Icon(Icons.file_present_sharp),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        imageExtensions.contains(mediaMessage
+                                                .attachment!.fileExtension)
+                                            ? CustomText(text: "Photo")
+                                            : Expanded(
+                                                child: CustomText(
+                                                    text: mediaMessage
+                                                        .attachment!.fileUrl
+                                                        .split("/")
+                                                        .last),
+                                              ),
                                       ],
-                                    ),
-                                  );
-                                })
-                              : Builder(builder: (context) {
-                                  Action? action =
-                                      widget.lastMessage as Action?;
-                                  log(action.toString());
-                                  return Container(
-                                    width: 200,
-                                    child: action != null
-                                        ? Row(
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  action.message,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  softWrap: true,
-                                                  style: TextStyle(
-                                                    color: Colors.blue,
+                                    );
+                                  })
+                                : Builder(builder: (context) {
+                                    Action? action =
+                                        widget.lastMessage as Action?;
+                                    log(action.toString());
+                                    return Container(
+                                      width: 200,
+                                      child: action != null
+                                          ? Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    action.message,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    softWrap: true,
+                                                    style: TextStyle(
+                                                      color: Colors.blue,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
-                                          )
-                                        : Container(),
-                                  );
-                                })
-                ],
+                                              ],
+                                            )
+                                          : Container(),
+                                    );
+                                  })
+                  ],
+                ),
               ),
-              Expanded(
-                  child: Text(
+              SizedBox(
+                width: 15,
+              ),
+              Text(
                 timesAgo,
-                // style: TextStyle(color: mycolor),
-              ))
+                style: TextStyle(color: appColor),
+              )
             ],
           ),
         ),

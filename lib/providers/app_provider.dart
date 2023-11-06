@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:ant_pay/constants/api.dart';
 import 'package:ant_pay/services/local_storage.dart';
 import 'package:cometchat/cometchat_sdk.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart' hide Response;
+import 'package:http/http.dart';
 import '../services/http.service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -18,7 +20,6 @@ class AppProvider extends ChangeNotifier {
   String msgreplied = "";
 
   List? forumData;
-
   List? notifications;
   List<Conversation>? listConversation;
   List<BaseMessage>? chatData;
@@ -26,11 +27,21 @@ class AppProvider extends ChangeNotifier {
 
   List<Map>? contacts;
   List? stickers;
+  List? customStickers;
 
   String dialcode = "+234";
   String countrySelected = "Nigeria";
 
+  String token = "";
+  Map? wallet;
+  List countries = [];
+  List banks = [];
+
+  String customSticker = "";
+
   AppProvider() {
+    listConversation = null;
+    chatData = null;
     getContacts();
   }
 
@@ -48,14 +59,17 @@ class AppProvider extends ChangeNotifier {
           list.sort((a, b) => a.displayName!.compareTo(b.displayName!));
           contacts = [];
           for (int i = 0; i < list.length; i++) {
-            QuerySnapshot snap = await FirebaseFirestore.instance
-                .collection("users")
-                .where("phoneNumber",
-                    isEqualTo: list[i].phones![0].value!.replaceAll(" ", ""))
-                .get();
-            if (snap.docs.isNotEmpty) {
-              contacts!.add({"name": list[i].displayName, "doc": snap.docs[0]});
-              notifyListeners();
+            if (list[i].phones!.isNotEmpty) {
+              QuerySnapshot snap = await FirebaseFirestore.instance
+                  .collection("users")
+                  .where("phoneNumber",
+                      isEqualTo: list[i].phones![0].value!.replaceAll(" ", ""))
+                  .get();
+              if (snap.docs.isNotEmpty) {
+                contacts!
+                    .add({"name": list[i].displayName, "doc": snap.docs[0]});
+                notifyListeners();
+              }
             }
           }
           log(contacts.toString());
@@ -72,14 +86,16 @@ class AppProvider extends ChangeNotifier {
         list.sort((a, b) => a.displayName!.compareTo(b.displayName!));
         contacts = [];
         for (int i = 0; i < list.length; i++) {
-          QuerySnapshot snap = await FirebaseFirestore.instance
-              .collection("users")
-              .where("phoneNumber",
-                  isEqualTo: list[i].phones![0].value!.replaceAll(" ", ""))
-              .get();
-          if (snap.docs.isNotEmpty) {
-            contacts!.add({"name": list[i].displayName, "doc": snap.docs[0]});
-            notifyListeners();
+          if (list[i].phones!.isNotEmpty) {
+            QuerySnapshot snap = await FirebaseFirestore.instance
+                .collection("users")
+                .where("phoneNumber",
+                    isEqualTo: list[i].phones![0].value!.replaceAll(" ", ""))
+                .get();
+            if (snap.docs.isNotEmpty) {
+              contacts!.add({"name": list[i].displayName, "doc": snap.docs[0]});
+              notifyListeners();
+            }
           }
         }
         log(contacts.toString());
@@ -93,6 +109,13 @@ class AppProvider extends ChangeNotifier {
     QuerySnapshot snap =
         await FirebaseFirestore.instance.collection("stickers").get();
     stickers = snap.docs[0]["stickers"];
+    notifyListeners();
+  }
+
+  getCustomStickers() async {
+    QuerySnapshot snap =
+        await FirebaseFirestore.instance.collection("customStickers").get();
+    customStickers = snap.docs[0]["stickers"];
     notifyListeners();
   }
 
@@ -120,12 +143,12 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  getForumData() async {
+  /* getForumData() async {
     Response response = await HttpService.post("", {});
     forumData = jsonDecode(response.data);
     notifyListeners();
     // log(forumData.toString());
-  }
+  }*/
 
 //get one to one or one to group message history(all messages)
   getChatData(String conversationWithUid, String type, bool newPerson) async {
@@ -156,10 +179,10 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
-  addToChatData(BaseMessage message) {
+  /*addToChatData(BaseMessage message) {
     chatData!.add(message);
     notifyListeners();
-  }
+  }*/
 
 //get persons the user has chatted with
   conversationData() async {
@@ -178,20 +201,64 @@ class AppProvider extends ChangeNotifier {
     });
   }
 
-  Future getNotifications() async {
+  /* Future getNotifications() async {
     Response response = await HttpService.post("", {});
     notifications = jsonDecode(response.data);
     notifyListeners();
     // log(notifications.toString());
-  }
+  }*/
 
-  getImage(String username) async {
+  /* getImage(String username) async {
     try {
       Response res = await HttpService.post("", {"username": username});
       imageUrl = res.data;
     } catch (e) {
       imageUrl = "";
     }
+    notifyListeners();
+  }*/
+
+  setToken(String token) {
+    this.token = token;
+    notifyListeners();
+  }
+
+  getWallet() async {
+    Response response = await HttpService.getRequest(Api.wallet,
+        bearerToken: true, accessToken: this.token);
+    log(this.token);
+    Map result = jsonDecode(response.body);
+    log(result.toString());
+    if (result["status"]) {
+      wallet = result["data"];
+      notifyListeners();
+    } else {
+      Get.defaultDialog(
+          title: "Error",
+          middleText: "There was an error getting user wallet details");
+    }
+  }
+
+  getCountries() async {
+    Response response = await HttpService.getRequest(Api.countries);
+    Map result = jsonDecode(response.body);
+    if (result["status"]) {
+      countries = result["data"]["data"];
+      notifyListeners();
+    }
+  }
+
+  getBanks() async {
+    Response response = await HttpService.getRequest(Api.banks);
+    Map result = jsonDecode(response.body);
+    if (result["status"]) {
+      banks = result["data"]["data"];
+      notifyListeners();
+    }
+  }
+
+  setCustomSticker(String sticker) {
+    customSticker = sticker;
     notifyListeners();
   }
 }

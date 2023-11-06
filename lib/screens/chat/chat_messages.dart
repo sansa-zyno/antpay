@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:ant_pay/constants/app_colors.dart';
 import 'package:ant_pay/constants/app_images.dart';
@@ -6,8 +7,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ant_pay/providers/app_provider.dart';
 import 'package:cometchat/cometchat_sdk.dart';
 import 'package:date_format/date_format.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Action;
 import 'package:flutter/scheduler.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class ChatMessages extends StatefulWidget {
@@ -112,9 +116,56 @@ class _ChatMessagesState extends State<ChatMessages> {
                       SizedBox(
                         height: 8,
                       ),
-                      Text(
-                        time,
-                        style: TextStyle(color: Colors.white),
+                      Container(
+                        constraints: BoxConstraints(maxWidth: 100),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              time,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            SizedBox(
+                              width: 3,
+                            ),
+                            textMessage.readAt != null
+                                ? Stack(
+                                    children: [
+                                      Icon(
+                                        Icons.check,
+                                        color: gd2,
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Icon(
+                                          Icons.check,
+                                          color: gd2,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : textMessage.deliveredAt != null
+                                    ? Stack(
+                                        children: [
+                                          Icon(
+                                            Icons.check,
+                                            color: Colors.grey,
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(left: 10),
+                                            child: Icon(
+                                              Icons.check,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : Icon(
+                                        Icons.check,
+                                        color: Colors.grey,
+                                      ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: 8),
                       widget.type != ConversationType.user
@@ -267,35 +318,41 @@ class _ChatMessagesState extends State<ChatMessages> {
   }
 
   Widget imageMessageTile(MediaMessage mediaMessage, String time) {
-    return mediaMessage.sender!.uid == widget.me.uid.toLowerCase()
-        ? Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                // Icon(Icons.phone,color: const Color(0xff7672c9),),
-                Column(
+    List imageExtensions = ["jpg", "png", "jpeg"];
+    //log(mediaMessage.attachment!.fileExtension);
+    return mediaMessage.attachment != null
+        ? mediaMessage.sender!.uid == widget.me.uid.toLowerCase()
+            ? Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Container(
-                      //height: 180,
-                      //width: MediaQuery.of(context).size.width * 0.5,
-                      /*decoration: BoxDecoration(
-                        color: Color(0xFFD4A3FF),
-                        borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(20),
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
-                      ),*/
-                      margin: EdgeInsets.only(
-                        top: 10,
-                      ),
-                      //padding: EdgeInsets.all(15),
-                      child: Column(
-                        children: [
-                          /*reply != ""
+                    // Icon(Icons.phone,color: const Color(0xff7672c9),),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        InkWell(
+                          onTap: () async {
+                            final url = mediaMessage.attachment!.fileUrl;
+                            final filename = mediaMessage.attachment!.fileUrl
+                                .split("/")
+                                .last;
+                            var request =
+                                await HttpClient().getUrl(Uri.parse(url));
+                            var response = await request.close();
+                            var bytes =
+                                await consolidateHttpClientResponseBytes(
+                                    response);
+                            var dir = await getApplicationDocumentsDirectory();
+                            File file = File("${dir.path}/$filename");
+                            await file.writeAsBytes(bytes, flush: true);
+                            OpenFilex.open(file.path);
+                          },
+                          child: Column(
+                            children: [
+                              /*reply != ""
                                   ? reply.contains("uploads/images/")
                                       ? Container(
                                           padding: EdgeInsets.all(8),
@@ -325,107 +382,177 @@ class _ChatMessagesState extends State<ChatMessages> {
                                           ),
                                         )
                                   : Container(),*/
-                          SizedBox(
-                            height: 8,
+                              SizedBox(
+                                height: 8,
+                              ),
+                              mediaMessage.attachment != null &&
+                                      mediaMessage.attachment!.fileUrl != ""
+                                  ? imageExtensions.contains(mediaMessage
+                                          .attachment!.fileExtension)
+                                      ? ClipRRect(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(8)),
+                                          child: Image.network(
+                                            mediaMessage.attachment!.fileUrl,
+                                            height: 90,
+                                          ),
+                                        )
+                                      : Container(
+                                          constraints:
+                                              BoxConstraints(maxWidth: 200),
+                                          child: Text(
+                                            mediaMessage.attachment!.fileUrl
+                                                .split("/")
+                                                .last,
+                                            style: TextStyle(
+                                                fontSize: 16.0,
+                                                color: Color(0xFFD4A3FF),
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                fontFamily: "Helvetica"),
+                                          ),
+                                        )
+                                  : Container(),
+                            ],
                           ),
-                          mediaMessage.attachment != null &&
-                                  mediaMessage.attachment!.fileUrl != ""
-                              ? ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(8)),
-                                  child: Image.network(
-                                    mediaMessage.attachment!.fileUrl,
-                                    height: 90,
-                                  ),
-                                )
-                              : Container(),
-                        ],
-                      ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Container(
+                          constraints: BoxConstraints(maxWidth: 100),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                time,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              SizedBox(
+                                width: 3,
+                              ),
+                              mediaMessage.readAt != null
+                                  ? Stack(
+                                      children: [
+                                        Icon(
+                                          Icons.check,
+                                          color: gd2,
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 10),
+                                          child: Icon(
+                                            Icons.check,
+                                            color: gd2,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : mediaMessage.deliveredAt != null
+                                      ? Stack(
+                                          children: [
+                                            Icon(
+                                              Icons.check,
+                                              color: Colors.grey,
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  EdgeInsets.only(left: 10),
+                                              child: Icon(
+                                                Icons.check,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : Icon(
+                                          Icons.check,
+                                          color: Colors.grey,
+                                        ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        widget.type != ConversationType.user
+                            ? Text(
+                                widget.me.name,
+                                style: TextStyle(color: Color(0xFFD4A3FF)),
+                              )
+                            : Container()
+                      ],
                     ),
                     SizedBox(
-                      height: 8,
+                      width: 8,
                     ),
-                    Text(
-                      time,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    SizedBox(height: 8),
                     widget.type != ConversationType.user
-                        ? Text(
-                            widget.me.name,
-                            style: TextStyle(color: Color(0xFFD4A3FF)),
-                          )
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(30),
+                            child: CachedNetworkImage(
+                                height: 40,
+                                width: 40,
+                                imageUrl: widget.me.avatar ?? "",
+                                fit: BoxFit.fill,
+                                progressIndicatorBuilder:
+                                    (context, url, progress) => Center(
+                                          child: CircularProgressIndicator(
+                                              value: progress.progress),
+                                        )))
                         : Container()
                   ],
                 ),
-                SizedBox(
-                  width: 8,
-                ),
-                widget.type != ConversationType.user
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
-                        child: CachedNetworkImage(
-                            height: 40,
-                            width: 40,
-                            imageUrl: widget.me.avatar ?? "",
-                            fit: BoxFit.fill,
-                            progressIndicatorBuilder:
-                                (context, url, progress) => Center(
-                                      child: CircularProgressIndicator(
-                                          value: progress.progress),
-                                    )))
-                    : Container()
-              ],
-            ),
-          )
-        : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                // Icon(Icons.phone,color: const Color(0xff7672c9),),
-
-                widget.type != ConversationType.user
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
-                        child: CachedNetworkImage(
-                            height: 40,
-                            width: 40,
-                            imageUrl: widget.type == ConversationType.user
-                                ? (widget.conversationWith as User).avatar ?? ""
-                                : mediaMessage.sender!.avatar ?? "",
-                            fit: BoxFit.fill,
-                            progressIndicatorBuilder:
-                                (context, url, progress) => Center(
-                                      child: CircularProgressIndicator(
-                                          value: progress.progress),
-                                    )))
-                    : Container(),
-                SizedBox(
-                  width: 8,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              )
+            : Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Container(
-                      //height: 180,
-                      // width: MediaQuery.of(context).size.width * 0.5,
-                      /*decoration: BoxDecoration(
-                        color: Color(0xffADFFE1),
-                        borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(20),
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
-                      ),*/
-                      margin: EdgeInsets.only(
-                        top: 10,
-                      ),
-                      //padding: EdgeInsets.all(15),
-                      child: Column(
-                        children: [
-                          /*reply != ""
+                    // Icon(Icons.phone,color: const Color(0xff7672c9),),
+
+                    widget.type != ConversationType.user
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(30),
+                            child: CachedNetworkImage(
+                                height: 40,
+                                width: 40,
+                                imageUrl: widget.type == ConversationType.user
+                                    ? (widget.conversationWith as User)
+                                            .avatar ??
+                                        ""
+                                    : mediaMessage.sender!.avatar ?? "",
+                                fit: BoxFit.fill,
+                                progressIndicatorBuilder:
+                                    (context, url, progress) => Center(
+                                          child: CircularProgressIndicator(
+                                              value: progress.progress),
+                                        )))
+                        : Container(),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () async {
+                            final url = mediaMessage.attachment!.fileUrl;
+                            final filename = mediaMessage.attachment!.fileUrl
+                                .split("/")
+                                .last;
+                            var request =
+                                await HttpClient().getUrl(Uri.parse(url));
+                            var response = await request.close();
+                            var bytes =
+                                await consolidateHttpClientResponseBytes(
+                                    response);
+                            var dir = await getApplicationDocumentsDirectory();
+                            File file = File("${dir.path}/$filename");
+                            await file.writeAsBytes(bytes, flush: true);
+                            OpenFilex.open(file.path);
+                          },
+                          child: Column(
+                            children: [
+                              /*reply != ""
                                   ? reply.contains("uploads/images/")
                                       ? Container(
                                           padding: EdgeInsets.all(8),
@@ -453,45 +580,63 @@ class _ChatMessagesState extends State<ChatMessages> {
                                                 fontFamily: "Nunito"),
                                           ))
                                   : Container(),*/
-                          SizedBox(
-                            height: 8,
+                              SizedBox(
+                                height: 8,
+                              ),
+                              mediaMessage.attachment != null &&
+                                      mediaMessage.attachment!.fileUrl != ""
+                                  ? imageExtensions.contains(mediaMessage
+                                          .attachment!.fileExtension)
+                                      ? ClipRRect(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(8)),
+                                          child: Image.network(
+                                            mediaMessage.attachment!.fileUrl,
+                                            height: 90,
+                                          ),
+                                        )
+                                      : Container(
+                                          constraints:
+                                              BoxConstraints(maxWidth: 200),
+                                          child: Text(
+                                            mediaMessage.attachment!.fileUrl
+                                                .split("/")
+                                                .last,
+                                            style: TextStyle(
+                                                fontSize: 16.0,
+                                                color: Color(0xffADFFE1),
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                fontFamily: "Helvetica"),
+                                          ),
+                                        )
+                                  : Container(),
+                            ],
                           ),
-                          mediaMessage.attachment != null &&
-                                  mediaMessage.attachment!.fileUrl != ""
-                              ? ClipRRect(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(8)),
-                                  child: Image.network(
-                                    mediaMessage.attachment!.fileUrl,
-                                    height: 90,
-                                  ),
-                                )
-                              : Container(),
-                        ],
-                      ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Text(
+                          time,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        SizedBox(height: 8),
+                        widget.type != ConversationType.user
+                            ? Text(
+                                widget.type == ConversationType.user
+                                    ? (widget.conversationWith as User).name
+                                    : mediaMessage.sender!.name,
+                                style: TextStyle(
+                                    fontSize: 16, color: Color(0xffADFFE1)),
+                              )
+                            : Container()
+                      ],
                     ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      time,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    SizedBox(height: 8),
-                    widget.type != ConversationType.user
-                        ? Text(
-                            widget.type == ConversationType.user
-                                ? (widget.conversationWith as User).name
-                                : mediaMessage.sender!.name,
-                            style: TextStyle(
-                                fontSize: 16, color: Color(0xffADFFE1)),
-                          )
-                        : Container()
                   ],
                 ),
-              ],
-            ),
-          );
+              )
+        : Container();
   }
 
   Widget chatMessages(h, w, BuildContext context) {

@@ -27,204 +27,224 @@ class _ContactListState extends State<ContactList> {
   Widget build(BuildContext context) {
     AppProvider appProvider = Provider.of<AppProvider>(context);
     UserController userController = Provider.of<UserController>(context);
-    return SafeArea(
-      child: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(image: AssetImage(stickers)),
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [gd1, gd2, gd3, gd4, gd5],
-                stops: [0.02, 0.2, 0.6, 0.8, 1.0]),
-          ),
-          child: RefreshIndicator(
-            onRefresh: () async {
-              await appProvider.getContacts();
-            },
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
-              body: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Image.asset(heart_red, width: 50),
+    return Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(image: AssetImage(stickers)),
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [appColor, gd2, gd3, gd4, gd5],
+              stops: [0.02, 0.2, 0.6, 0.8, 1.0]),
+        ),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await appProvider.getContacts();
+          },
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Stack(
+              children: [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Image.asset(heart_red, width: 50),
+                ),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Image.asset(
+                    sun,
+                    width: 100,
                   ),
-                  Align(
-                    alignment: Alignment.topCenter,
+                ),
+                Positioned(
+                    top: 90,
+                    right: 0,
                     child: Image.asset(
-                      sun,
-                      width: 100,
+                      dollar,
+                      width: 50,
+                    )),
+                Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: Image.asset(
+                      car,
+                      width: 70,
+                    )),
+                Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Image.asset(
+                      money_and_gold,
+                      width: 70,
+                    )),
+                Column(
+                  children: [
+                    SizedBox(
+                      height: 50,
                     ),
-                  ),
-                  Positioned(
-                      top: 90,
-                      right: 0,
-                      child: Image.asset(
-                        dollar,
-                        width: 50,
-                      )),
-                  Positioned(
-                      bottom: 0,
-                      left: 0,
-                      child: Image.asset(
-                        car,
-                        width: 70,
-                      )),
-                  Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Image.asset(
-                        money_and_gold,
-                        width: 70,
-                      )),
-                  Column(
-                    children: [
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                          width: 65,
-                          margin: EdgeInsets.only(right: 25),
-                          padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                              color: Color(0xff6E01CE),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all()),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.add,
-                                size: 15,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              CustomText(
-                                text: "Add",
-                                color: Colors.white,
-                                size: 14,
-                              ),
-                            ],
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 15,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(
+                            Icons.arrow_back_ios_new,
+                            color: gd2,
+                            size: 20,
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Container(
-                        width: 311,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.grey.withOpacity(0.3),
-                                  blurRadius: 10,
-                                  offset: Offset(2, 2))
-                            ]),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                //controller: controller,
-                                //keyboardType: type ?? TextInputType.text,
-                                //obscureText: obsecureText ?? false,
-                                decoration: new InputDecoration(
-                                    prefix: Text("   "),
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 15),
-                                    alignLabelWithHint: false,
-                                    floatingLabelBehavior:
-                                        FloatingLabelBehavior.auto,
-                                    hintText: 'Search Contacts',
-                                    labelStyle: TextStyle(
-                                      fontFamily: "Nunito",
-                                    ),
-                                    hintStyle: TextStyle(fontFamily: "Nunito")),
-                              ),
+                        Spacer(),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                            width: 65,
+                            margin: EdgeInsets.only(right: 25),
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                color: Color(0xff6E01CE),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all()),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.add,
+                                  size: 15,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                CustomText(
+                                  text: "Add",
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: 15, right: 30),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                blurRadius: 10,
+                                offset: Offset(2, 2))
+                          ]),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              //controller: controller,
+                              //keyboardType: type ?? TextInputType.text,
+                              //obscureText: obsecureText ?? false,
+                              decoration: new InputDecoration(
+                                  prefix: Text("   "),
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 15),
+                                  alignLabelWithHint: false,
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.auto,
+                                  hintText: 'Search Contacts',
+                                  labelStyle: TextStyle(
+                                    fontFamily: "Nunito",
+                                  ),
+                                  hintStyle: TextStyle(fontFamily: "Nunito")),
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      appProvider.contacts != null
-                          ? Expanded(
-                              child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: appProvider.contacts!.length,
-                                  itemBuilder: (ctx, index) {
-                                    return ListTile(
-                                      onTap: () {
-                                        User me = User(
-                                            uid: userController
-                                                .getCurrentUser.uid!,
-                                            name: userController
-                                                .getCurrentUser.displayName!,
-                                            avatar: userController
-                                                .getCurrentUser.avatarUrl);
-                                        User recipient = User(
-                                            uid: appProvider.contacts![index]
-                                                ["doc"]["uid"],
-                                            name: appProvider.contacts![index]
-                                                ["name"],
-                                            avatar: appProvider.contacts![index]
-                                                ["doc"]["avatarUrl"]);
-                                        appProvider.getChatData(recipient.uid,
-                                            ConversationType.user, true);
-                                        changeScreen(
-                                            context,
-                                            ChatScreen(
-                                                me: me,
-                                                type: ConversationType.user,
-                                                conversationWith: recipient,
-                                                conversationId: ""));
-                                      },
-                                      leading: Container(
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Color(0xff6E01CE),
-                                                width: 3),
-                                            shape: BoxShape.circle,
-                                            image: DecorationImage(
-                                                image: NetworkImage(
-                                                    appProvider.contacts![index]
-                                                        ["doc"]["avatarUrl"]),
-                                                fit: BoxFit.cover)),
-                                      ),
-                                      title: CustomText(
-                                          text: appProvider.contacts![index]
-                                              ["name"]),
-                                      subtitle: CustomText(
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    appProvider.contacts != null
+                        ? Expanded(
+                            child: ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: appProvider.contacts!.length,
+                                padding: EdgeInsets.all(0),
+                                itemBuilder: (ctx, index) {
+                                  return ListTile(
+                                    onTap: () {
+                                      User me = User(
+                                          uid: userController
+                                              .getCurrentUser.uid!
+                                              .toLowerCase(),
+                                          name: userController
+                                              .getCurrentUser.displayName!,
+                                          avatar: userController
+                                              .getCurrentUser.avatarUrl);
+                                      User recipient = User(
+                                          uid: appProvider.contacts![index]
+                                                  ["doc"]["uid"]
+                                              .toString()
+                                              .toLowerCase(),
+                                          name: appProvider.contacts![index]
+                                              ["name"],
+                                          avatar: appProvider.contacts![index]
+                                              ["doc"]["avatarUrl"]);
+                                      appProvider.getChatData(recipient.uid,
+                                          ConversationType.user, true);
+                                      changeScreen(
+                                          context,
+                                          ChatScreen(
+                                              me: me,
+                                              type: ConversationType.user,
+                                              conversationWith: recipient,
+                                              conversationId: ""));
+                                    },
+                                    leading: Container(
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Color(0xff6E01CE),
+                                              width: 3),
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                              image: NetworkImage(
+                                                  appProvider.contacts![index]
+                                                      ["doc"]["avatarUrl"]),
+                                              fit: BoxFit.cover)),
+                                    ),
+                                    title: CustomText(
                                         text: appProvider.contacts![index]
-                                            ["doc"]["status"],
-                                        color: Colors.black45,
-                                      ),
-                                      trailing: Container(
-                                        margin: EdgeInsets.only(right: 8),
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Color(0xff6E01CE),
-                                                width: 1.5),
-                                            shape: BoxShape.circle),
-                                        width: 15,
-                                      ),
-                                    );
-                                  }),
-                            )
-                          : CircularProgressIndicator()
-                    ],
-                  )
-                ],
-              ),
+                                            ["name"]),
+                                    subtitle: CustomText(
+                                      text: appProvider.contacts![index]["doc"]
+                                          ["status"],
+                                      color: Colors.black45,
+                                    ),
+                                    trailing: Container(
+                                      margin: EdgeInsets.only(right: 8),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Color(0xff6E01CE),
+                                              width: 1.5),
+                                          shape: BoxShape.circle),
+                                      width: 15,
+                                    ),
+                                  );
+                                }),
+                          )
+                        : CircularProgressIndicator()
+                  ],
+                )
+              ],
             ),
-          )),
-    );
+          ),
+        ));
   }
 }

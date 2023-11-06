@@ -1,13 +1,17 @@
 import 'dart:async';
 import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:ant_pay/constants/app_colors.dart';
+import 'package:ant_pay/constants/app_images.dart';
 import 'package:ant_pay/constants/app_strings.dart';
 import 'package:ant_pay/providers/user_controller.dart';
 import 'package:ant_pay/services/call_methods.dart';
+import 'package:ant_pay/widgets/custom_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:ant_pay/models/call.dart';
+import 'dart:developer';
 
 class VoiceCallScreen extends StatefulWidget {
   final Call call;
@@ -30,6 +34,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
   final _infoStrings = <String>[];
   bool muted = false;
   late RtcEngine _engine;
+  int? _remoteUid;
 
   @override
   void initState() {
@@ -64,13 +69,13 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
         userJoined: (int uid, int elapsed) {
           print("remote user $uid joined");
           setState(() {
-            // _remoteUid = uid;
+            _remoteUid = uid;
           });
         },
         userOffline: (int uid, UserOfflineReason reason) {
           print("remote user $uid left channel");
           setState(() {
-            // _remoteUid = null;
+            _remoteUid = null;
           });
         },
       ),
@@ -87,12 +92,14 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
       userController = Provider.of<UserController>(context, listen: false);
 
       callStreamSubscription = callMethods
-          .callStream(uid: userController.getCurrentUser.uid!)
+          .callStream(uid: userController.getCurrentUser.uid!.toLowerCase())
           .listen((DocumentSnapshot ds) {
+        log(userController.getCurrentUser.uid!);
         // defining the logic
         switch (ds.data()) {
           case null:
             // snapshot is null which means that call is hanged and documents are deleted
+            log(ds.data().toString());
             Navigator.pop(context);
             break;
 
@@ -263,8 +270,11 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
   /// Toolbar layout
   Widget _toolbar() {
     return Container(
-      alignment: Alignment.bottomCenter,
-      padding: const EdgeInsets.symmetric(vertical: 150),
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: gd2),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -273,15 +283,32 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
             child: Icon(
               muted ? Icons.mic : Icons.mic_off,
               color: muted ? Colors.white : Colors.blueAccent,
-              size: 30.0,
+              size: 20.0,
             ),
             shape: CircleBorder(),
             elevation: 2.0,
             fillColor: muted ? Colors.blueAccent : Colors.white,
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(8.0),
+            constraints: BoxConstraints(minWidth: 30, minHeight: 30),
           ),
           SizedBox(
-            width: 25,
+            width: 15,
+          ),
+          RawMaterialButton(
+            onPressed: () {},
+            child: Icon(
+              Icons.volume_up,
+              color: Colors.white,
+              size: 20.0,
+            ),
+            shape: CircleBorder(),
+            elevation: 2.0,
+            fillColor: Colors.blueAccent,
+            padding: const EdgeInsets.all(8.0),
+            constraints: BoxConstraints(minWidth: 30, minHeight: 30),
+          ),
+          SizedBox(
+            width: 15,
           ),
           RawMaterialButton(
             onPressed: () => callMethods.endCall(
@@ -290,12 +317,13 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
             child: Icon(
               Icons.call_end,
               color: Colors.white,
-              size: 30.0,
+              size: 20.0,
             ),
             shape: CircleBorder(),
             elevation: 2.0,
             fillColor: Colors.redAccent,
-            padding: const EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(8.0),
+            constraints: BoxConstraints(minWidth: 30, minHeight: 30),
           ),
         ],
       ),
@@ -318,67 +346,146 @@ class _VoiceCallScreenState extends State<VoiceCallScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.green,
-      body: Container(
-        height: MediaQuery.of(context).size.height * 1,
-        width: MediaQuery.of(context).size.width * 1,
-        child: Stack(
-          children: [
-            widget.call.hasDialled!
-                ? widget.call.receiverPic != null
-                    ? Positioned(
-                        top: 120,
-                        left: MediaQuery.of(context).size.width / 2.8,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: Image.network(
-                            widget.call.receiverPic!,
-                            height: 90,
-                            width: 90,
-                            fit: BoxFit.cover,
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(image: AssetImage(stickers04)),
+          //color: Color(0xFF1A0130)
+          color: appColor),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Container(
+          height: MediaQuery.of(context).size.height * 1,
+          width: MediaQuery.of(context).size.width * 1,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned(
+                  top: 0, left: 15, child: Image.asset(heart_red_2, width: 70)),
+              Positioned(
+                  top: 230,
+                  left: 0,
+                  child: Image.asset(
+                    cards_on_hand,
+                    width: 100,
+                  )),
+              Positioned(
+                  top: 90,
+                  right: 0,
+                  child: Image.asset(
+                    dollar,
+                    width: 50,
+                  )),
+              Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: Image.asset(
+                    car,
+                    width: 70,
+                  )),
+              Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Image.asset(
+                    money_and_gold,
+                    width: 70,
+                  )),
+              widget.call.hasDialled!
+                  ? widget.call.receiverPic != null
+                      ? Positioned(
+                          top: 120,
+                          left: MediaQuery.of(context).size.width / 2.8,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(70),
+                            child: Image.network(
+                              widget.call.receiverPic!,
+                              height: 120,
+                              width: 120,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
+                        )
+                      : Positioned(
+                          top: 120,
+                          left: 90,
+                          child: CircleAvatar(
+                            radius: 90,
+                            child: Icon(
+                              Icons.person,
+                              size: 90,
+                            ),
+                            backgroundColor: Color(0xFF166138),
+                          ))
+                  : widget.call.callerPic != null
+                      ? Positioned(
+                          top: 120,
+                          left: MediaQuery.of(context).size.width / 2.8,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: Image.network(
+                              widget.call.callerPic!,
+                              height: 90,
+                              width: 90,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        )
+                      : Positioned(
+                          top: 120,
+                          left: 90,
+                          child: CircleAvatar(
+                            radius: 90,
+                            child: Icon(
+                              Icons.person,
+                              size: 90,
+                            ),
+                            backgroundColor: Color(0xFF166138),
+                          )),
+              //_panel(),
+              Positioned(
+                top: 300,
+                child: _remoteUid == null
+                    ? Column(
+                        children: [
+                          CustomText(
+                            text: "Calling ${widget.call.receiverName}",
+                            color: Colors.white,
+                            size: 16,
+                            weight: FontWeight.bold,
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          CustomText(
+                            text: "Ringing ...",
+                            color: Colors.white,
+                            size: 12,
+                          )
+                        ],
                       )
-                    : Positioned(
-                        top: 120,
-                        left: 90,
-                        child: CircleAvatar(
-                          radius: 90,
-                          child: Icon(
-                            Icons.person,
-                            size: 90,
+                    : Column(
+                        children: [
+                          CustomText(
+                            text: widget.call.hasDialled!
+                                ? "${widget.call.receiverName}"
+                                : "${widget.call.receiverName}",
+                            color: Colors.white,
+                            size: 16,
+                            weight: FontWeight.bold,
                           ),
-                          backgroundColor: Color(0xFF166138),
-                        ))
-                : widget.call.callerPic != null
-                    ? Positioned(
-                        top: 120,
-                        left: MediaQuery.of(context).size.width / 2.8,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: Image.network(
-                            widget.call.callerPic!,
-                            height: 90,
-                            width: 90,
-                            fit: BoxFit.cover,
+                          SizedBox(
+                            height: 15,
                           ),
-                        ),
-                      )
-                    : Positioned(
-                        top: 120,
-                        left: 90,
-                        child: CircleAvatar(
-                          radius: 90,
-                          child: Icon(
-                            Icons.person,
-                            size: 90,
-                          ),
-                          backgroundColor: Color(0xFF166138),
-                        )),
-            //_panel(),
-            _toolbar(),
-          ],
+                          CustomText(
+                            text: "02:34",
+                            color: Colors.white,
+                            size: 12,
+                          )
+                        ],
+                      ),
+              ),
+              Positioned(bottom: 100, child: _toolbar()),
+            ],
+          ),
         ),
       ),
     );

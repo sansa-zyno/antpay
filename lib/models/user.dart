@@ -9,6 +9,11 @@ class OurUser {
   String? bio;
   Timestamp? accountCreated;
   String? lastActive;
+  String? status;
+  bool? isReadyForTxn;
+  bool? isKycDone;
+  String? userId;
+  String? antpayPin;
 
   OurUser(
       {this.accountCreated,
@@ -18,7 +23,12 @@ class OurUser {
       this.country,
       this.displayName,
       this.bio,
-      this.lastActive});
+      this.status,
+      this.isReadyForTxn,
+      this.isKycDone,
+      this.lastActive,
+      this.userId,
+      this.antpayPin});
 
   /*factory OurUser.fromFireStore(DocumentSnapshot _data) {
     return OurUser(

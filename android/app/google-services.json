@@ -14,13 +14,50 @@
       },
       "oauth_client": [
         {
-          "client_id": "129147246215-lme9rqlc4dled7coqd3rt7oj3g79ve8h.apps.googleusercontent.com",
+          "client_id": "129147246215-9aqgvp8j21ap6v0psfqcva77fl57jqea.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ant_pay.www",
             "certificate_hash": "9b0f71277c5e8462c4f867e68fb276745be14dc1"
           }
         },
+        {
+          "client_id": "129147246215-lkcbl8st29bnumaemijbokj52vitdmcd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ant_pay.www",
+            "certificate_hash": "a2f6008f621064d91e1094528abbf2d9804d5248"
+          }
+        },
+        {
+          "client_id": "129147246215-kpog8g9mc6qe488vmngkb32gjdn9ubcq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhngc41MXzE_gDCT3nCJz_vyJHZjJMMO0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "129147246215-kpog8g9mc6qe488vmngkb32gjdn9ubcq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:129147246215:android:0bd97f02ac88bb2acb4a22",
+        "android_client_info": {
+          "package_name": "com.ant_pay_merchant.www"
+        }
+      },
+      "oauth_client": [
         {
           "client_id": "129147246215-kpog8g9mc6qe488vmngkb32gjdn9ubcq.apps.googleusercontent.com",
           "client_type": 3

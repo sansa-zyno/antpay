@@ -1,16 +1,16 @@
 import 'package:ant_pay/constants/app_colors.dart';
-import 'package:ant_pay/constants/app_images.dart';
 import 'package:ant_pay/models/call.dart';
 import 'package:ant_pay/providers/user_controller.dart';
 import 'package:ant_pay/screens/callscreens/call_screen.dart';
 import 'package:ant_pay/screens/callscreens/pickup/video_pickup_screen.dart';
 import 'package:ant_pay/screens/callscreens/pickup/voice_pickup_screen.dart';
 import 'package:ant_pay/screens/chat/chats_page.dart';
+import 'package:ant_pay/screens/merchants.dart';
+import 'package:ant_pay/screens/wallet.dart';
 import 'package:ant_pay/services/call_history.dart';
 import 'package:ant_pay/services/call_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:boxicons/boxicons.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +26,8 @@ class _HomeState extends State<Home> {
   late Widget _showPage;
   late CallScreen _call;
   late ChatsPage _chatsPage;
+  late Merchants _merchants;
+  late Wallet _wallet;
 
   //navbar
   Widget _pageChooser(int page) {
@@ -34,6 +36,10 @@ class _HomeState extends State<Home> {
         return _call;
       case 1:
         return _chatsPage;
+      case 2:
+        return _merchants;
+      case 3:
+        return _wallet;
 
       default:
         return new Container(
@@ -59,6 +65,8 @@ class _HomeState extends State<Home> {
     pageIndex = 1;
     _call = CallScreen();
     _chatsPage = ChatsPage();
+    _merchants = Merchants();
+    _wallet = Wallet();
     _showPage = _pageChooser(pageIndex);
     UserController controller =
         Provider.of<UserController>(context, listen: false);
@@ -85,37 +93,35 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: _showPage,
-        bottomNavigationBar: BottomNavigationBar(
-            backgroundColor: Colors.white,
-            type: BottomNavigationBarType.fixed,
-            elevation: 0,
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(icon: Icon(Icons.call), label: ""),
-              BottomNavigationBarItem(
-                  icon: Icon(
-                    FontAwesomeIcons.solidComment,
-                  ),
-                  label: ""),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.photo_camera), label: ""),
-              BottomNavigationBarItem(icon: Icon(Icons.house), label: ""),
-              BottomNavigationBarItem(icon: Icon(Icons.wallet), label: ""),
-            ],
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            currentIndex: pageIndex,
-            selectedItemColor: appColor,
-            unselectedItemColor: gd1,
-            onTap: (int tappedIndex) {
-              setState(() {
-                pageIndex = tappedIndex;
-                _showPage = _pageChooser(pageIndex);
-              });
-            }),
-      ),
+    return Scaffold(
+      body: _showPage,
+      bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.white,
+          type: BottomNavigationBarType.fixed,
+          elevation: 0,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: Icon(Icons.call), label: ""),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  FontAwesomeIcons.solidComment,
+                ),
+                label: ""),
+            /* BottomNavigationBarItem(
+                icon: Icon(Icons.photo_camera), label: ""),*/
+            BottomNavigationBarItem(icon: Icon(Icons.house), label: ""),
+            BottomNavigationBarItem(icon: Icon(Icons.wallet), label: ""),
+          ],
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          currentIndex: pageIndex,
+          selectedItemColor: appColor,
+          unselectedItemColor: appColor.withOpacity(0.5),
+          onTap: (int tappedIndex) {
+            setState(() {
+              pageIndex = tappedIndex;
+              _showPage = _pageChooser(pageIndex);
+            });
+          }),
     );
   }
 }

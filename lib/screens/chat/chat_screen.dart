@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:ant_pay/constants/app_images.dart';
 import 'package:ant_pay/providers/app_provider.dart';
+import 'package:ant_pay/providers/user_controller.dart';
 import 'package:ant_pay/screens/chat/chat_appbar.dart';
 import 'package:ant_pay/screens/chat/chat_bottombar.dart';
 import 'package:ant_pay/screens/chat/chat_messages.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cometchat/cometchat_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -32,45 +34,109 @@ class _ChatScreenState extends State<ChatScreen> with MessageListener {
     CometChat.addMessageListener("listenerId", this);
     appProvider = Provider.of<AppProvider>(context, listen: false);
     appProvider.getStickers();
+    appProvider.getCustomStickers();
+    getUser();
+  }
+
+  getUser() async {
+    if (widget.type == ConversationType.user) {
+      List uids = [];
+      QuerySnapshot snap =
+          await FirebaseFirestore.instance.collection("users").get();
+      for (int i = 0; i < snap.docs.length; i++) {
+        uids.add(snap.docs[i]["uid"].toString());
+      }
+      List res = uids
+          .where((element) =>
+              element.toString().toLowerCase() ==
+              (widget.conversationWith as User).uid)
+          .toList();
+      String userId = res[0];
+      UserController userController =
+          Provider.of<UserController>(context, listen: false);
+      userController.getUserInfo(userId);
+    }
   }
 
   @override
   void onTextMessageReceived(TextMessage textMessage) {
     debugPrint("Text message received successfully: $textMessage");
-    if (textMessage.conversationId == widget.conversationId) {
-      if (appProvider.chatData != null) {
-        appProvider.addToChatData(textMessage);
-      } else {
-        appProvider.chatData = [];
-        appProvider.addToChatData(textMessage);
-      }
-    }
+
+    CometChat.markAsDelivered(textMessage, onSuccess: (String unused) {
+      debugPrint("markAsDelivered : $unused ");
+    }, onError: (CometChatException e) {
+      debugPrint("markAsDelivered unsuccessful : ${e.message} ");
+    });
+    CometChat.markAsRead(textMessage, onSuccess: (String unused) {
+      debugPrint("markAsRead : $unused ");
+    }, onError: (CometChatException e) {
+      debugPrint("markAsRead unsuccessfull : ${e.message} ");
+    });
+    widget.type == ConversationType.user
+        ? appProvider.getChatData(
+            textMessage.sender!.uid, ConversationType.user, false)
+        : appProvider.getChatData((widget.conversationWith as Group).guid,
+            ConversationType.group, false);
   }
 
   @override
   void onMediaMessageReceived(MediaMessage mediaMessage) {
     debugPrint("Media message received successfully: $mediaMessage");
-    if (mediaMessage.conversationId == widget.conversationId) {
-      if (appProvider.chatData != null) {
-        appProvider.chatData!.add(mediaMessage);
-      } else {
-        appProvider.chatData = [];
-        appProvider.chatData!.add(mediaMessage);
-      }
-    }
+    CometChat.markAsDelivered(mediaMessage, onSuccess: (String unused) {
+      debugPrint("markAsDelivered : $unused ");
+    }, onError: (CometChatException e) {
+      debugPrint("markAsDelivered unsuccessful : ${e.message} ");
+    });
+    CometChat.markAsRead(mediaMessage, onSuccess: (String unused) {
+      debugPrint("markAsRead : $unused ");
+    }, onError: (CometChatException e) {
+      debugPrint("markAsRead unsuccessfull : ${e.message} ");
+    });
+    widget.type == ConversationType.user
+        ? appProvider.getChatData(
+            mediaMessage.sender!.uid, ConversationType.user, false)
+        : appProvider.getChatData((widget.conversationWith as Group).guid,
+            ConversationType.group, false);
   }
 
   @override
   void onCustomMessageReceived(CustomMessage customMessage) {
     debugPrint("Custom message received successfully: $customMessage");
-    if (customMessage.conversationId == widget.conversationId) {
-      if (appProvider.chatData != null) {
-        appProvider.chatData!.add(customMessage);
-      } else {
-        appProvider.chatData = [];
-        appProvider.chatData!.add(customMessage);
-      }
-    }
+    CometChat.markAsDelivered(customMessage, onSuccess: (String unused) {
+      debugPrint("markAsDelivered : $unused ");
+    }, onError: (CometChatException e) {
+      debugPrint("markAsDelivered unsuccessful : ${e.message} ");
+    });
+    CometChat.markAsRead(customMessage, onSuccess: (String unused) {
+      debugPrint("markAsRead : $unused ");
+    }, onError: (CometChatException e) {
+      debugPrint("markAsRead unsuccessfull : ${e.message} ");
+    });
+    widget.type == ConversationType.user
+        ? appProvider.getChatData(
+            customMessage.sender!.uid, ConversationType.user, false)
+        : appProvider.getChatData((widget.conversationWith as Group).guid,
+            ConversationType.group, false);
+  }
+
+  @override
+  void onMessagesDelivered(MessageReceipt messageReceipt) {
+    // TODO: implement onMessagesDelivered
+    widget.type == ConversationType.user
+        ? appProvider.getChatData(
+            messageReceipt.sender.uid, ConversationType.user, false)
+        : appProvider.getChatData((widget.conversationWith as Group).guid,
+            ConversationType.group, false);
+  }
+
+  @override
+  void onMessagesRead(MessageReceipt messageReceipt) {
+    // TODO: implement onMessagesRead
+    widget.type == ConversationType.user
+        ? appProvider.getChatData(
+            messageReceipt.sender.uid, ConversationType.user, false)
+        : appProvider.getChatData((widget.conversationWith as Group).guid,
+            ConversationType.group, false);
   }
 
   @override

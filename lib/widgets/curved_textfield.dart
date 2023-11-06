@@ -14,6 +14,7 @@ class CurvedTextField extends StatelessWidget {
   Function? onEditingComplete;
   Function(String)? onChange;
   int? maxLines;
+  String? Function(String?)? validator;
 
   CurvedTextField(
       {this.controller,
@@ -28,12 +29,12 @@ class CurvedTextField extends StatelessWidget {
       this.onChange,
       this.onEditingComplete,
       this.type,
-      this.maxLines});
+      this.maxLines,
+      this.validator});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 283,
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -43,10 +44,7 @@ class CurvedTextField extends StatelessWidget {
                 blurRadius: 10,
                 offset: Offset(2, 2))
           ]),
-      child: TextField(
-        onChanged: (text) {
-          //onChange!(text);
-        },
+      child: TextFormField(
         controller: controller,
         keyboardType: type ?? TextInputType.text,
         obscureText: obsecureText ?? false,
@@ -61,6 +59,7 @@ class CurvedTextField extends StatelessWidget {
               fontFamily: "Nunito",
             ),
             hintStyle: TextStyle(fontFamily: "Nunito")),
+        validator: validator ?? null,
       ),
     );
   }

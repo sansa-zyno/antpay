@@ -55,60 +55,61 @@ class _VerificationState extends State<Verification> {
   @override
   Widget build(BuildContext context) {
     AppProvider appProvider = Provider.of<AppProvider>(context);
-    return SafeArea(
-      child: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage(stickers)),
-          gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [gd1, gd2, gd3, gd4, gd5],
-              stops: [0.02, 0.2, 0.6, 0.8, 1.0]),
-        ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Stack(
-            children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: Image.asset(heart_red, width: 50),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(image: AssetImage(stickers)),
+        gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [appColor, gd2, gd3, gd4, gd5],
+            stops: [0.02, 0.2, 0.6, 0.8, 1.0]),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: Image.asset(heart_red, width: 50),
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Image.asset(
+                sun,
+                width: 100,
               ),
-              Align(
-                alignment: Alignment.topCenter,
+            ),
+            Positioned(
+                top: 120,
+                left: 0,
                 child: Image.asset(
-                  sun,
+                  cards_on_hand,
                   width: 100,
-                ),
-              ),
-              Positioned(
-                  top: 120,
-                  left: 0,
-                  child: Image.asset(
-                    cards_on_hand,
-                    width: 100,
-                  )),
-              Positioned(
-                  top: 90,
-                  right: 0,
-                  child: Image.asset(
-                    dollar,
-                    width: 50,
-                  )),
-              Positioned(
-                  bottom: 0,
-                  left: 0,
-                  child: Image.asset(
-                    car,
-                    width: 70,
-                  )),
-              Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Image.asset(
-                    money_and_gold,
-                    width: 70,
-                  )),
-              SingleChildScrollView(
+                )),
+            Positioned(
+                top: 90,
+                right: 0,
+                child: Image.asset(
+                  dollar,
+                  width: 50,
+                )),
+            Positioned(
+                bottom: 0,
+                left: 0,
+                child: Image.asset(
+                  car,
+                  width: 70,
+                )),
+            Positioned(
+                bottom: 0,
+                right: 0,
+                child: Image.asset(
+                  money_and_gold,
+                  width: 70,
+                )),
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
                   children: [
                     SizedBox(
@@ -123,23 +124,25 @@ class _VerificationState extends State<Verification> {
                       height: 70,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 50),
+                      padding: const EdgeInsets.only(left: 20),
                       child: CustomText(
                           text:
                               "Enter the 6-digit code we just sent to ${widget.number == "" ? "you" : "${appProvider.dialcode + widget.number}"}",
                           textAlign: TextAlign.center),
                     ),
                     SizedBox(
-                      height: 50,
+                      height: 60,
                     ),
                     Padding(
-                      padding: EdgeInsets.only(left: 25),
+                      padding: EdgeInsets.only(left: 8),
                       child: Container(
-                        width: 283,
+                        alignment: Alignment.centerLeft,
+                        width: double.infinity,
                         child: Pinput(
                           length: 6,
                           defaultPinTheme: PinTheme(
                               height: 50,
+                              width: 50,
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(8))),
@@ -195,8 +198,8 @@ class _VerificationState extends State<Verification> {
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

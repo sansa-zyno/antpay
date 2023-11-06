@@ -1,23 +1,17 @@
 import 'dart:io';
-import 'package:ant_pay/screens/callscreens/pickup/video_pickup_screen.dart';
-import 'package:ant_pay/screens/callscreens/pickup/voice_pickup_screen.dart';
-import 'package:ant_pay/services/call_history.dart';
 import 'package:ant_pay/services/call_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'dart:async';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:ant_pay/models/user.dart';
 import 'package:uuid/uuid.dart';
 
-import '../models/call.dart';
-
 class UserController with ChangeNotifier {
   OurUser _currentUser = OurUser();
+  OurUser _otherUser = OurUser();
   OurUser get getCurrentUser => _currentUser;
+  OurUser? get getOtherUser => _otherUser;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   FirebaseAuth auth = FirebaseAuth.instance;
   bool isAvatarUploading = false;
@@ -45,7 +39,7 @@ class UserController with ChangeNotifier {
     }*/
   }
 
-  Future<bool> updateAvatar(String uid) async {
+  /*Future<bool> updateAvatar(String uid) async {
     Future<String?> uploadImage(File imageFile, String uid) async {
       String? downloadUrl;
       Reference reference =
@@ -124,7 +118,7 @@ class UserController with ChangeNotifier {
       return false;
     }
     return true;
-  }
+  }*/
 
   getCurrentUserInfo() async {
     try {
@@ -142,9 +136,36 @@ class UserController with ChangeNotifier {
         _currentUser.bio = snapshotData["bio"];
         _currentUser.displayName = snapshotData["displayName"];
         _currentUser.country = snapshotData["country"];
+        _currentUser.status = snapshotData["status"];
         _currentUser.lastActive = snapshotData["lastActive"];
+        _currentUser.isReadyForTxn = snapshotData["isReadyForTxn"];
+        _currentUser.isKycDone = snapshotData["isKycDone"];
+        _currentUser.userId = snapshotData["userId"];
+        _currentUser.antpayPin = snapshotData["antpayPin"];
         notifyListeners();
       } else {}
+    } catch (e) {}
+  }
+
+  getUserInfo(String uid) async {
+    try {
+      DocumentSnapshot _documentSnapshot =
+          await _firestore.collection("users").doc(uid).get();
+      Map<String, dynamic> snapshotData =
+          _documentSnapshot.data()! as Map<String, dynamic>;
+      _otherUser.uid = snapshotData["uid"];
+      _otherUser.phone = snapshotData["phoneNumber"];
+      _otherUser.accountCreated = snapshotData["accountCreated"];
+      _otherUser.avatarUrl = snapshotData["avatarUrl"];
+      _otherUser.bio = snapshotData["bio"];
+      _otherUser.displayName = snapshotData["displayName"];
+      _otherUser.country = snapshotData["country"];
+      _otherUser.status = snapshotData["status"];
+      _otherUser.lastActive = snapshotData["lastActive"];
+      _otherUser.isReadyForTxn = snapshotData["isReadyForTxn"];
+      _otherUser.isKycDone = snapshotData["isKycDone"];
+      _otherUser.userId = snapshotData["userId"];
+      notifyListeners();
     } catch (e) {}
   }
 

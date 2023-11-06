@@ -11,3 +11,5 @@ String cometchatAuthKey = "d850a1c44776d6ad14bc3741ab5333ae9b92f7fa";
 const String APP_ID = "4a84925e28294ad19e11742ad926ba48";
 const String agoraTokenServerUrl =
     "https://antpaybackend.netlify.app/.netlify/functions/app";
+
+double titleBarOffset = 40;

@@ -23,7 +23,7 @@ class ChatBodyWidget extends StatelessWidget {
               gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [gd1, gd2, gd3, gd4, gd5],
+                  colors: [appColor, gd2, gd3, gd4, gd5],
                   stops: [0.02, 0.2, 0.6, 0.8, 1.0]),
             ),
             child: Messages(
