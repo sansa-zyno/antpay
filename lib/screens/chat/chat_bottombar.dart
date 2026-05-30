@@ -5,15 +5,13 @@ import 'dart:typed_data';
 import 'package:ant_pay/constants/api.dart';
 import 'package:ant_pay/constants/app_colors.dart';
 import 'package:ant_pay/constants/app_images.dart';
-import 'package:ant_pay/helpers/common.dart';
-import 'package:ant_pay/models/user.dart';
+import 'package:ant_pay/utils/navigation.dart';
 import 'package:ant_pay/providers/app_provider.dart';
 import 'package:ant_pay/providers/user_controller.dart';
 import 'package:ant_pay/screens/custom_stickers.dart';
-import 'package:ant_pay/screens/transactions/enter_pin_pay.dart';
+import 'package:ant_pay/screens/chat/enter_pin_pay.dart';
 import 'package:ant_pay/services/http.service.dart';
 import 'package:ant_pay/widgets/custom_text.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cometchat/cometchat_sdk.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -24,11 +22,10 @@ import 'package:provider/provider.dart';
 import 'package:widgets_to_image/widgets_to_image.dart';
 
 class ChatBottomBar extends StatefulWidget {
-  User me;
-  AppEntity conversationWith;
+  final User me;
+  final AppEntity conversationWith;
   final String type;
-  ChatBottomBar(
-      {required this.me, required this.conversationWith, required this.type});
+  ChatBottomBar({required this.me, required this.conversationWith, required this.type});
 
   @override
   _ChatBottomBarState createState() => _ChatBottomBarState();
@@ -83,8 +80,7 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
           receiverUid: (widget.conversationWith as User).uid,
           file: image!.path);
 
-      await CometChat.sendMediaMessage(mediaMessage,
-          onSuccess: (MediaMessage message) {
+      await CometChat.sendMediaMessage(mediaMessage, onSuccess: (MediaMessage message) {
         debugPrint("Media message sent successfully:${mediaMessage.metadata}");
       }, onError: (e) {
         debugPrint("Media message sending failed with exception: ${e.message}");
@@ -101,8 +97,7 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
           receiverUid: (widget.conversationWith as Group).guid,
           file: image!.path);
 
-      await CometChat.sendMediaMessage(mediaMessage,
-          onSuccess: (MediaMessage message) {
+      await CometChat.sendMediaMessage(mediaMessage, onSuccess: (MediaMessage message) {
         debugPrint("Media message sent successfully:${mediaMessage.metadata}");
       }, onError: (e) {
         debugPrint("Media message sending failed with exception: ${e.message}");
@@ -120,8 +115,7 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
           receiverUid: (widget.conversationWith as User).uid,
           file: file!.path);
 
-      await CometChat.sendMediaMessage(mediaMessage,
-          onSuccess: (MediaMessage message) {
+      await CometChat.sendMediaMessage(mediaMessage, onSuccess: (MediaMessage message) {
         debugPrint("Media message sent successfully:${mediaMessage.metadata}");
       }, onError: (e) {
         debugPrint("Media message sending failed with exception: ${e.message}");
@@ -139,8 +133,7 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
           receiverUid: (widget.conversationWith as Group).guid,
           file: file!.path);
 
-      await CometChat.sendMediaMessage(mediaMessage,
-          onSuccess: (MediaMessage message) {
+      await CometChat.sendMediaMessage(mediaMessage, onSuccess: (MediaMessage message) {
         debugPrint("Media message sent successfully:${mediaMessage.metadata}");
       }, onError: (e) {
         debugPrint("Media message sending failed with exception: ${e.message}");
@@ -165,14 +158,11 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
 
   @override
   Widget build(BuildContext context) {
-    var w = MediaQuery.of(context).size.width / 100;
-    var h = MediaQuery.of(context).size.height / 100;
     appProvider = Provider.of<AppProvider>(context);
     return SafeArea(
       child: Container(
         padding: EdgeInsets.only(top: 15),
-        decoration: BoxDecoration(
-            color: showsticker ? Colors.white : Colors.transparent),
+        decoration: BoxDecoration(color: showsticker ? Colors.white : Colors.transparent),
         width: double.infinity,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -185,39 +175,31 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
                         children: [
                           appProvider.senderReplied == widget.me.uid
                               ? Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       "You",
-                                      style:
-                                          TextStyle(color: Color(0xff4B0973)),
+                                      style: TextStyle(color: Color(0xff4B0973)),
                                     ),
                                     InkWell(
-                                      child: Icon(Icons.cancel,
-                                          color: Color(0xff4B0973)),
+                                      child: Icon(Icons.cancel, color: Color(0xff4B0973)),
                                       onTap: () {
-                                        appProvider.updateVal(
-                                            "", "", false, "", "");
+                                        appProvider.updateVal("", "", false, "", "");
                                       },
                                     )
                                   ],
                                 )
                               : Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       appProvider.senderReplied,
-                                      style:
-                                          TextStyle(color: Color(0xff4B0973)),
+                                      style: TextStyle(color: Color(0xff4B0973)),
                                     ),
                                     InkWell(
-                                      child: Icon(Icons.cancel,
-                                          color: Color(0xff4B0973)),
+                                      child: Icon(Icons.cancel, color: Color(0xff4B0973)),
                                       onTap: () {
-                                        appProvider.updateVal(
-                                            "", "", false, "", "");
+                                        appProvider.updateVal("", "", false, "", "");
                                       },
                                     )
                                   ],
@@ -245,39 +227,31 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
                         children: [
                           appProvider.senderReplied == widget.me.uid
                               ? Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       "You",
-                                      style:
-                                          TextStyle(color: Color(0xff4B0973)),
+                                      style: TextStyle(color: Color(0xff4B0973)),
                                     ),
                                     InkWell(
-                                      child: Icon(Icons.cancel,
-                                          color: Color(0xff4B0973)),
+                                      child: Icon(Icons.cancel, color: Color(0xff4B0973)),
                                       onTap: () {
-                                        appProvider.updateVal(
-                                            "", "", false, "", "");
+                                        appProvider.updateVal("", "", false, "", "");
                                       },
                                     )
                                   ],
                                 )
                               : Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       appProvider.senderReplied,
-                                      style:
-                                          TextStyle(color: Color(0xff4B0973)),
+                                      style: TextStyle(color: Color(0xff4B0973)),
                                     ),
                                     InkWell(
-                                      child: Icon(Icons.cancel,
-                                          color: Color(0xff4B0973)),
+                                      child: Icon(Icons.cancel, color: Color(0xff4B0973)),
                                       onTap: () {
-                                        appProvider.updateVal(
-                                            "", "", false, "", "");
+                                        appProvider.updateVal("", "", false, "", "");
                                       },
                                     )
                                   ],
@@ -319,12 +293,9 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
                             backgroundColor: Colors.transparent,
                             isScrollControlled: true,
                             isDismissible: false,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(15))));
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(15))));
                       },
-                      child: Icon(Icons.add,
-                          color: showsticker ? appColor : Color(0xffADFFE1))),
+                      child: Icon(Icons.add, color: showsticker ? appColor : Color(0xffADFFE1))),
                   SizedBox(
                     width: 15,
                   ),
@@ -348,9 +319,7 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
                             Radius.circular(30),
                           ),
                         ),
-                        hintText: showsticker
-                            ? "Choose a sticker..."
-                            : 'Type a message...',
+                        hintText: showsticker ? "Choose a sticker..." : 'Type a message...',
                         suffixIcon: IconButton(
                           padding: EdgeInsets.all(0),
                           onPressed: () {},
@@ -377,63 +346,38 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
                             InkWell(
                                 onTap: () {
                                   widget.type == ConversationType.user
-                                      ? addImageMessage(
-                                              source: ImageSource.camera)
-                                          .then((value) {
-                                          appProvider.getChatData(
-                                              (widget.conversationWith as User)
-                                                  .uid,
-                                              ConversationType.user,
-                                              false);
-                                          Future.delayed(Duration(seconds: 1),
-                                              () {
+                                      ? addImageMessage(source: ImageSource.camera).then((value) {
+                                          appProvider.getChatData((widget.conversationWith as User).uid, ConversationType.user, false);
+                                          Future.delayed(Duration(seconds: 1), () {
                                             appProvider.conversationData();
                                           });
                                         })
-                                      : addImageMessageToGroup(
-                                              source: ImageSource.camera)
-                                          .then((value) {
-                                          appProvider.getChatData(
-                                              (widget.conversationWith as Group)
-                                                  .guid,
-                                              ConversationType.group,
-                                              false);
-                                          Future.delayed(Duration(seconds: 1),
-                                              () {
+                                      : addImageMessageToGroup(source: ImageSource.camera).then((value) {
+                                          appProvider.getChatData((widget.conversationWith as Group).guid, ConversationType.group, false);
+                                          Future.delayed(Duration(seconds: 1), () {
                                             appProvider.conversationData();
                                           });
                                         });
                                   appProvider.updateVal("", "", false, "", "");
                                 },
-                                child: Icon(Icons.photo_camera,
-                                    color: showsticker
-                                        ? appColor
-                                        : Color(0xffADFFE1))),
+                                child: Icon(Icons.photo_camera, color: showsticker ? appColor : Color(0xffADFFE1))),
                             SizedBox(
                               width: 15,
                             ),
-                            Icon(Icons.mic,
-                                color:
-                                    showsticker ? appColor : Color(0xffADFFE1)),
+                            Icon(Icons.mic, color: showsticker ? appColor : Color(0xffADFFE1)),
                           ],
                         )
                       : InkWell(
                           onTap: () {
                             widget.type == ConversationType.user
                                 ? addTextMessage().then((value) {
-                                    appProvider.getChatData(
-                                        (widget.conversationWith as User).uid,
-                                        ConversationType.user,
-                                        false);
+                                    appProvider.getChatData((widget.conversationWith as User).uid, ConversationType.user, false);
                                     Future.delayed(Duration(seconds: 1), () {
                                       appProvider.conversationData();
                                     });
                                   })
                                 : addTextMessageToGroup().then((value) {
-                                    appProvider.getChatData(
-                                        (widget.conversationWith as Group).guid,
-                                        ConversationType.group,
-                                        false);
+                                    appProvider.getChatData((widget.conversationWith as Group).guid, ConversationType.group, false);
                                     Future.delayed(Duration(seconds: 1), () {
                                       appProvider.conversationData();
                                     });
@@ -465,29 +409,20 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
           Container(
             padding: EdgeInsets.symmetric(vertical: 8),
             margin: EdgeInsets.only(right: 15, left: 3),
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(15)),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
             child: Column(
               children: [
                 ListTile(
                   onTap: () {
                     widget.type == ConversationType.user
-                        ? addImageMessage(source: ImageSource.camera)
-                            .then((value) {
-                            appProvider.getChatData(
-                                (widget.conversationWith as User).uid,
-                                ConversationType.user,
-                                false);
+                        ? addImageMessage(source: ImageSource.camera).then((value) {
+                            appProvider.getChatData((widget.conversationWith as User).uid, ConversationType.user, false);
                             Future.delayed(Duration(seconds: 1), () {
                               appProvider.conversationData();
                             });
                           })
-                        : addImageMessageToGroup(source: ImageSource.camera)
-                            .then((value) {
-                            appProvider.getChatData(
-                                (widget.conversationWith as Group).guid,
-                                ConversationType.group,
-                                false);
+                        : addImageMessageToGroup(source: ImageSource.camera).then((value) {
+                            appProvider.getChatData((widget.conversationWith as Group).guid, ConversationType.group, false);
                             Future.delayed(Duration(seconds: 1), () {
                               appProvider.conversationData();
                             });
@@ -509,22 +444,14 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
                 ListTile(
                   onTap: () {
                     widget.type == ConversationType.user
-                        ? addImageMessage(source: ImageSource.gallery)
-                            .then((value) {
-                            appProvider.getChatData(
-                                (widget.conversationWith as User).uid,
-                                ConversationType.user,
-                                false);
+                        ? addImageMessage(source: ImageSource.gallery).then((value) {
+                            appProvider.getChatData((widget.conversationWith as User).uid, ConversationType.user, false);
                             Future.delayed(Duration(seconds: 1), () {
                               appProvider.conversationData();
                             });
                           })
-                        : addImageMessageToGroup(source: ImageSource.gallery)
-                            .then((value) {
-                            appProvider.getChatData(
-                                (widget.conversationWith as Group).guid,
-                                ConversationType.group,
-                                false);
+                        : addImageMessageToGroup(source: ImageSource.gallery).then((value) {
+                            appProvider.getChatData((widget.conversationWith as Group).guid, ConversationType.group, false);
                             Future.delayed(Duration(seconds: 1), () {
                               appProvider.conversationData();
                             });
@@ -547,19 +474,13 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
                   onTap: () {
                     widget.type == ConversationType.user
                         ? addDocMessage().then((value) {
-                            appProvider.getChatData(
-                                (widget.conversationWith as User).uid,
-                                ConversationType.user,
-                                false);
+                            appProvider.getChatData((widget.conversationWith as User).uid, ConversationType.user, false);
                             Future.delayed(Duration(seconds: 1), () {
                               appProvider.conversationData();
                             });
                           })
                         : addDocMessageToGroup().then((value) {
-                            appProvider.getChatData(
-                                (widget.conversationWith as Group).guid,
-                                ConversationType.group,
-                                false);
+                            appProvider.getChatData((widget.conversationWith as Group).guid, ConversationType.group, false);
                             Future.delayed(Duration(seconds: 1), () {
                               appProvider.conversationData();
                             });
@@ -627,9 +548,7 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
               Navigator.pop(context);
             },
             child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15)),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
                 padding: EdgeInsets.all(15),
                 margin: EdgeInsets.only(right: 15, left: 3),
                 child: Row(
@@ -654,16 +573,13 @@ class _ChatBottomBarState extends State<ChatBottomBar> {
 class StickerWidget extends StatefulWidget {
   final AppEntity conversationWith;
   final String type;
-  const StickerWidget(
-      {Key? key, required this.conversationWith, required this.type})
-      : super(key: key);
+  const StickerWidget({Key? key, required this.conversationWith, required this.type}) : super(key: key);
 
   @override
   State<StickerWidget> createState() => _StickerWidgetState();
 }
 
-class _StickerWidgetState extends State<StickerWidget>
-    with SingleTickerProviderStateMixin {
+class _StickerWidgetState extends State<StickerWidget> with SingleTickerProviderStateMixin {
   int idx = -1;
   late TabController controller;
   dynamic selectedSticker = "";
@@ -676,24 +592,19 @@ class _StickerWidgetState extends State<StickerWidget>
   Future sendStickerToUser() async {
     if (selectedSticker != "") {
       MediaMessage mediaMessage = MediaMessage(
-          receiverType: ConversationType.user,
-          type: CometChatMessageType.image,
-          receiverUid: (widget.conversationWith as User).uid,
-          file: null);
+          receiverType: ConversationType.user, type: CometChatMessageType.image, receiverUid: (widget.conversationWith as User).uid, file: null);
       if (selectedSticker.runtimeType == String) {
         String fileUrl = selectedSticker;
         String fileName = "test";
         String fileExtension = "png";
         String fileMimeType = "image/png";
 
-        Attachment attach =
-            Attachment(fileUrl, fileName, fileExtension, fileMimeType, null);
+        Attachment attach = Attachment(fileUrl, fileName, fileExtension, fileMimeType, null);
         mediaMessage.attachment = attach;
       } else {
         mediaMessage.file = (selectedSticker as File).path;
       }
-      await CometChat.sendMediaMessage(mediaMessage,
-          onSuccess: (MediaMessage message) {
+      await CometChat.sendMediaMessage(mediaMessage, onSuccess: (MediaMessage message) {
         debugPrint("Media message sent successfully:${mediaMessage.metadata}");
       }, onError: (e) {
         debugPrint("Media message sending failed with exception: ${e.message}");
@@ -765,67 +676,32 @@ class _StickerWidgetState extends State<StickerWidget>
             Tab(
               child: Container(
                   padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color:
-                          controller.index == 1 ? appColor : Color(0xffADFFE1)),
-                  child: CustomText(
-                      text: "NGN",
-                      size: 12,
-                      color:
-                          controller.index == 1 ? Colors.white : Colors.black)),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: controller.index == 1 ? appColor : Color(0xffADFFE1)),
+                  child: CustomText(text: "NGN", size: 12, color: controller.index == 1 ? Colors.white : Colors.black)),
             ),
             Tab(
               child: Container(
                   padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color:
-                          controller.index == 2 ? appColor : Color(0xffADFFE1)),
-                  child: CustomText(
-                      text: "USD",
-                      size: 12,
-                      color:
-                          controller.index == 2 ? Colors.white : Colors.black)),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: controller.index == 2 ? appColor : Color(0xffADFFE1)),
+                  child: CustomText(text: "USD", size: 12, color: controller.index == 2 ? Colors.white : Colors.black)),
             ),
             Tab(
               child: Container(
                   padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color:
-                          controller.index == 3 ? appColor : Color(0xffADFFE1)),
-                  child: CustomText(
-                      text: "Pounds",
-                      size: 12,
-                      color:
-                          controller.index == 3 ? Colors.white : Colors.black)),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: controller.index == 3 ? appColor : Color(0xffADFFE1)),
+                  child: CustomText(text: "Pounds", size: 12, color: controller.index == 3 ? Colors.white : Colors.black)),
             ),
             Tab(
               child: Container(
                   padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color:
-                          controller.index == 4 ? appColor : Color(0xffADFFE1)),
-                  child: CustomText(
-                      text: "GHC",
-                      size: 12,
-                      color:
-                          controller.index == 4 ? Colors.white : Colors.black)),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: controller.index == 4 ? appColor : Color(0xffADFFE1)),
+                  child: CustomText(text: "GHC", size: 12, color: controller.index == 4 ? Colors.white : Colors.black)),
             ),
             Tab(
               child: Container(
                   padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color:
-                          controller.index == 5 ? appColor : Color(0xffADFFE1)),
-                  child: CustomText(
-                      text: "Airtime",
-                      size: 12,
-                      color:
-                          controller.index == 5 ? Colors.white : Colors.black)),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: controller.index == 5 ? appColor : Color(0xffADFFE1)),
+                  child: CustomText(text: "Airtime", size: 12, color: controller.index == 5 ? Colors.white : Colors.black)),
             ),
             Tab(
               child: Container(
@@ -858,7 +734,7 @@ class _StickerWidgetState extends State<StickerWidget>
                     keyboardType: TextInputType.number,
                     controller: amountController,
                     decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(bottom: 12),
+                        contentPadding: EdgeInsets.symmetric(vertical: 6.7),
                         border: InputBorder.none,
                         prefix: Text(controller.index == 1
                             ? "\u20a6"
@@ -867,23 +743,18 @@ class _StickerWidgetState extends State<StickerWidget>
                                 : "")),
                   )),
             ),
-            SizedBox(
-              width: 10,
-            ),
+            SizedBox(width: 10),
             Expanded(
               child: ListTile(
                 visualDensity: VisualDensity(horizontal: 0, vertical: -4),
                 title: Text(
                   "Select Sticker",
                   style: TextStyle(fontSize: 14),
-                  overflow: appProvider.customSticker.isNotEmpty
-                      ? TextOverflow.ellipsis
-                      : TextOverflow.visible,
+                  overflow: appProvider.customSticker.isNotEmpty ? TextOverflow.ellipsis : TextOverflow.visible,
                 ),
                 trailing: InkWell(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (ctx) => CustomSticker()));
+                      Navigator.push(context, MaterialPageRoute(builder: (ctx) => CustomSticker()));
                     },
                     child: Icon(Icons.arrow_drop_down)),
               ),
@@ -904,8 +775,7 @@ class _StickerWidgetState extends State<StickerWidget>
                           left: 10,
                           right: 5,
                           child: CustomText(
-                            text:
-                                "${controller.index == 1 ? "\u20a6" : controller.index == 2 ? "\$" : ""}${amountController.text}",
+                            text: "${controller.index == 1 ? "\u20a6" : controller.index == 2 ? "\$" : ""}${amountController.text}",
                             size: 12,
                             color: Colors.white,
                           ),
@@ -926,8 +796,7 @@ class _StickerWidgetState extends State<StickerWidget>
                     onTap: () async {
                       final bytes = await imageController.capture();
                       final tempDir = await getTemporaryDirectory();
-                      File file =
-                          await File('${tempDir.path}/image.png').create();
+                      File file = await File('${tempDir.path}/image.png').create();
                       if (bytes != null) {
                         file.writeAsBytesSync(bytes);
                         selectedSticker = file;
@@ -945,28 +814,19 @@ class _StickerWidgetState extends State<StickerWidget>
                                       });
                                     });*/
                         List Username = appProvider.contacts!.where((e) {
-                          return e["doc"]["uid"].toString().toLowerCase() ==
-                              (widget.conversationWith as User).uid;
+                          return e["doc"]["uid"].toString().toLowerCase() == (widget.conversationWith as User).uid;
                         }).toList();
                         if (userController.getOtherUser != null) {
                           log(userController.getOtherUser!.userId!);
                           Response response = await HttpService.postRequest(
-                              Api.transfer,
-                              {
-                                "user_id": userController.getOtherUser!.userId!,
-                                "amount": amountController.text
-                              },
-                              bearerToken: true,
-                              accessToken: appProvider.token);
+                              Api.transfer, {"user_id": userController.getOtherUser!.userId!, "amount": amountController.text},
+                              bearerToken: true, accessToken: appProvider.token);
                           Map res = jsonDecode(response.body);
                           if (res["status"] == "Success") {
                             changeScreen(
                                 context,
                                 PayEnterPin(
-                                    name: Username.isNotEmpty
-                                        ? Username[0]["name"]
-                                        : (widget.conversationWith as User)
-                                            .name,
+                                    name: Username.isNotEmpty ? Username[0]["name"] : (widget.conversationWith as User).name,
                                     validationUrl: res["data"]["url"],
                                     amount: amountController.text,
                                     sendSticker: sendStickerToUser,
@@ -975,10 +835,7 @@ class _StickerWidgetState extends State<StickerWidget>
                         } else {}
                       } else {
                         sendStickerToGroup().then((value) {
-                          appProvider.getChatData(
-                              (widget.conversationWith as Group).guid,
-                              ConversationType.group,
-                              false);
+                          appProvider.getChatData((widget.conversationWith as Group).guid, ConversationType.group, false);
                           Future.delayed(Duration(seconds: 1), () {
                             appProvider.conversationData();
                           });
@@ -1015,14 +872,12 @@ class _StickerWidgetState extends State<StickerWidget>
                         shrinkWrap: true,
                         itemCount: appProvider.stickers!.length,
                         scrollDirection: Axis.vertical,
-                        itemBuilder: (BuildContext context, int index) =>
-                            InkWell(
-                                onTap: () async {
-                                  selectedSticker =
-                                      appProvider.stickers![index]["img"];
-                                  //idx = index;
-                                  if (widget.type == ConversationType.user) {
-                                    /*sendStickerToUser().then((value) {
+                        itemBuilder: (BuildContext context, int index) => InkWell(
+                            onTap: () async {
+                              selectedSticker = appProvider.stickers![index]["img"];
+                              //idx = index;
+                              if (widget.type == ConversationType.user) {
+                                /*sendStickerToUser().then((value) {
                                       appProvider.getChatData(
                                           (widget.conversationWith as User).uid,
                                           ConversationType.user,
@@ -1031,66 +886,44 @@ class _StickerWidgetState extends State<StickerWidget>
                                         appProvider.conversationData();
                                       });
                                     });*/
-                                    List Username =
-                                        appProvider.contacts!.where((e) {
-                                      return e["doc"]["uid"]
-                                              .toString()
-                                              .toLowerCase() ==
-                                          (widget.conversationWith as User).uid;
-                                    }).toList();
-                                    if (userController.getOtherUser != null) {
-                                      log(userController.getOtherUser!.userId!);
-                                      Response response =
-                                          await HttpService.postRequest(
-                                              Api.transfer,
-                                              {
-                                                "user_id": userController
-                                                    .getOtherUser!.userId!,
-                                                "amount": appProvider
-                                                    .stickers![index]["value"]
-                                              },
-                                              bearerToken: true,
-                                              accessToken: appProvider.token);
-                                      log(response.body);
-                                      Map res = jsonDecode(response.body);
-                                      if (res["status"] == "Success") {
-                                        changeScreen(
-                                            context,
-                                            PayEnterPin(
-                                              name: Username.isNotEmpty
-                                                  ? Username[0]["name"]
-                                                  : (widget.conversationWith
-                                                          as User)
-                                                      .name,
-                                              validationUrl: res["data"]["url"],
-                                              amount: appProvider
-                                                  .stickers![index]["value"],
-                                              sendSticker: sendStickerToUser,
-                                              conversationWith:
-                                                  widget.conversationWith,
-                                            ));
-                                      }
-                                    } else {}
-                                  } else {
-                                    sendStickerToGroup().then((value) {
-                                      appProvider.getChatData(
-                                          (widget.conversationWith as Group)
-                                              .guid,
-                                          ConversationType.group,
-                                          false);
-                                      Future.delayed(Duration(seconds: 1), () {
-                                        appProvider.conversationData();
-                                      });
-                                    });
+                                List Username = appProvider.contacts!.where((e) {
+                                  return e["doc"]["uid"].toString().toLowerCase() == (widget.conversationWith as User).uid;
+                                }).toList();
+                                if (userController.getOtherUser != null) {
+                                  log(userController.getOtherUser!.userId!);
+                                  Response response = await HttpService.postRequest(Api.transfer,
+                                      {"user_id": userController.getOtherUser!.userId!, "amount": appProvider.stickers![index]["value"]},
+                                      bearerToken: true, accessToken: appProvider.token);
+                                  log(response.body);
+                                  Map res = jsonDecode(response.body);
+                                  if (res["status"] == "Success") {
+                                    changeScreen(
+                                        context,
+                                        PayEnterPin(
+                                          name: Username.isNotEmpty ? Username[0]["name"] : (widget.conversationWith as User).name,
+                                          validationUrl: res["data"]["url"],
+                                          amount: appProvider.stickers![index]["value"],
+                                          sendSticker: sendStickerToUser,
+                                          conversationWith: widget.conversationWith,
+                                        ));
                                   }
-                                  appProvider.updateVal("", "", false, "", "");
-                                },
-                                child: Stack(
-                                  children: [
-                                    Image.network(
-                                      appProvider.stickers![index]["img"],
-                                    ),
-                                    /*Visibility(
+                                } else {}
+                              } else {
+                                sendStickerToGroup().then((value) {
+                                  appProvider.getChatData((widget.conversationWith as Group).guid, ConversationType.group, false);
+                                  Future.delayed(Duration(seconds: 1), () {
+                                    appProvider.conversationData();
+                                  });
+                                });
+                              }
+                              appProvider.updateVal("", "", false, "", "");
+                            },
+                            child: Stack(
+                              children: [
+                                Image.network(
+                                  appProvider.stickers![index]["img"],
+                                ),
+                                /*Visibility(
                                       visible: index == idx,
                                       child: Positioned(
                                           top: 0,
@@ -1101,10 +934,9 @@ class _StickerWidgetState extends State<StickerWidget>
                                             child: Icon(Icons.check),
                                           )),
                                     )*/
-                                  ],
-                                )),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4, childAspectRatio: 1))
+                              ],
+                            )),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: 1))
                     : Center(child: Text("No stickers to show"))
                 : Center(child: Text("Loading stickers...")),
             Container(

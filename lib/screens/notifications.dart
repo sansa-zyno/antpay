@@ -32,8 +32,7 @@ class _NotificationsState extends State<Notifications> {
       backgroundColor: appColor,
       body: Stack(
         children: [
-          Positioned(
-              top: 0, left: 15, child: Image.asset(heart_red_2, width: 70)),
+          Positioned(top: 0, left: 15, child: Image.asset(heart_red_2, width: 70)),
           Column(
             children: [
               Container(
@@ -82,17 +81,12 @@ class _NotificationsState extends State<Notifications> {
                     width: double.infinity,
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: gd3,
                       //image: DecorationImage(image: AssetImage(stickers)),
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(25),
                         topRight: Radius.circular(25),
                       ),
-                      gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [appColor, gd2, gd3, gd4, gd5],
-                          stops: [0.02, 0.2, 0.6, 0.8, 1.0]),
                     ),
                     child: ListView.builder(
                         padding: EdgeInsets.all(0),
@@ -104,37 +98,25 @@ class _NotificationsState extends State<Notifications> {
                           if (index == 0) {
                             isSameDate = false;
                           } else {
-                            DateTime dte = DateTime.parse(
-                                "1970-12-0${index - 1}"); //date of prev item
-                            isSameDate = dt.compareTo(dte) == 0
-                                ? true
-                                : false; //compare dates
+                            DateTime dte = DateTime.parse("1970-12-0${index - 1}"); //date of prev item
+                            isSameDate = dt.compareTo(dte) == 0 ? true : false; //compare dates
                           }
                           if (index == 0 || !(isSameDate)) {
                             DateTime dt = DateTime.parse("1970-12-0$index");
-                            DateTime dateNow = DateTime.parse(
-                                DateTime.now().toString().substring(0, 10));
+                            DateTime dateNow = DateTime.parse(DateTime.now().toString().substring(0, 10));
                             DateTime dtTime = DateTime.parse("1970-12-0$index");
-                            String time =
-                                formatDate(dtTime, [hh, ':', nn, ' ', am]);
+                            String time = formatDate(dtTime, [hh, ':', nn, ' ', am]);
 
                             String date = dt.compareTo(dateNow) == 0
                                 ? "Today"
-                                : "${dt.year} ${dt.month} ${dt.day}" ==
-                                        "${dateNow.year} ${dateNow.month} ${(dateNow.day) - 1}"
+                                : "${dt.year} ${dt.month} ${dt.day}" == "${dateNow.year} ${dateNow.month} ${(dateNow.day) - 1}"
                                     ? "Yesterday"
                                     : formatDate(dt, [M, ' ', dd, ', ', yyyy]);
                             return Column(
                               children: [
                                 SizedBox(height: 8),
                                 Center(
-                                  child: Text(
-                                    date,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold),
-                                  ),
+                                  child: Text(date, style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold)),
                                 ),
                                 SizedBox(height: 15),
                                 Padding(
@@ -142,50 +124,27 @@ class _NotificationsState extends State<Notifications> {
                                   child: Row(
                                     children: [
                                       Container(
-                                        width: 50,
-                                        height: 50,
+                                        width: 40,
+                                        height: 40,
                                         decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Color(0xff6E01CE),
-                                                width: 3),
+                                            border: Border.all(color: Color(0xff6E01CE), width: 3),
                                             shape: BoxShape.circle,
-                                            image: DecorationImage(
-                                                image: AssetImage(male),
-                                                fit: BoxFit.cover)),
+                                            image: DecorationImage(image: AssetImage(male), fit: BoxFit.cover)),
                                       ),
-                                      SizedBox(
-                                        width: 15,
-                                      ),
+                                      SizedBox(width: 15),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             RichText(
-                                                text: TextSpan(
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                    children: [
-                                                  TextSpan(
-                                                      text:
-                                                          "John Doe requested payment of "),
-                                                  TextSpan(
-                                                      style: TextStyle(
-                                                          color: appColor,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                      text: "\$200")
-                                                ])),
-                                            SizedBox(
-                                              height: 8,
-                                            ),
+                                                text: TextSpan(style: TextStyle(color: Colors.black), children: [
+                                              TextSpan(text: "John Doe requested payment of "),
+                                              TextSpan(style: TextStyle(color: appColor, fontWeight: FontWeight.bold), text: "\$200")
+                                            ])),
+                                            SizedBox(height: 8),
                                             Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
-                                                SizedBox(
-                                                  height: 8,
-                                                ),
                                                 InkWell(
                                                   onTap: () {
                                                     idx = index;
@@ -195,29 +154,17 @@ class _NotificationsState extends State<Notifications> {
                                                   },
                                                   child: Container(
                                                     decoration: BoxDecoration(
-                                                        color: idx == index &&
-                                                                accept
-                                                            ? appColor
-                                                            : Colors
-                                                                .transparent,
-                                                        border: Border.all(
-                                                            color: appColor),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8)),
-                                                    padding: EdgeInsets.all(8),
+                                                        color: idx == index && accept ? appColor : Colors.transparent,
+                                                        border: Border.all(color: appColor),
+                                                        borderRadius: BorderRadius.circular(8)),
+                                                    padding: EdgeInsets.all(3),
                                                     child: CustomText(
                                                       text: "Accept",
-                                                      color:
-                                                          idx == index && accept
-                                                              ? Colors.white
-                                                              : null,
+                                                      color: idx == index && accept ? Colors.white : null,
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(
-                                                  width: 15,
-                                                ),
+                                                SizedBox(width: 50),
                                                 InkWell(
                                                   onTap: () {
                                                     idx = index;
@@ -227,23 +174,13 @@ class _NotificationsState extends State<Notifications> {
                                                   },
                                                   child: Container(
                                                     decoration: BoxDecoration(
-                                                        color: idx == index &&
-                                                                decline
-                                                            ? appColor
-                                                            : Colors
-                                                                .transparent,
-                                                        border: Border.all(
-                                                            color: appColor),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8)),
-                                                    padding: EdgeInsets.all(8),
+                                                        color: idx == index && decline ? appColor : Colors.transparent,
+                                                        border: Border.all(color: appColor),
+                                                        borderRadius: BorderRadius.circular(8)),
+                                                    padding: EdgeInsets.all(3),
                                                     child: CustomText(
                                                       text: "Decline",
-                                                      color: idx == index &&
-                                                              decline
-                                                          ? Colors.white
-                                                          : null,
+                                                      color: idx == index && decline ? Colors.white : null,
                                                     ),
                                                   ),
                                                 )
@@ -252,9 +189,7 @@ class _NotificationsState extends State<Notifications> {
                                           ],
                                         ),
                                       ),
-                                      CustomText(
-                                        text: time,
-                                      ),
+                                      CustomText(text: time),
                                     ],
                                   ),
                                 ),
@@ -262,56 +197,33 @@ class _NotificationsState extends State<Notifications> {
                             );
                           } else {
                             DateTime dtTime = DateTime.parse("1970-12-0$index");
-                            String time =
-                                formatDate(dtTime, [hh, ':', nn, ' ', am]);
+                            String time = formatDate(dtTime, [hh, ':', nn, ' ', am]);
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 15),
                               child: Row(
                                 children: [
                                   Container(
-                                    width: 50,
-                                    height: 50,
+                                    width: 40,
+                                    height: 40,
                                     decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: Color(0xff6E01CE), width: 3),
+                                        border: Border.all(color: Color(0xff6E01CE), width: 3),
                                         shape: BoxShape.circle,
-                                        image: DecorationImage(
-                                            image: AssetImage(male),
-                                            fit: BoxFit.cover)),
+                                        image: DecorationImage(image: AssetImage(male), fit: BoxFit.cover)),
                                   ),
-                                  SizedBox(
-                                    width: 15,
-                                  ),
+                                  SizedBox(width: 15),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         RichText(
-                                            text: TextSpan(
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                                children: [
-                                              TextSpan(
-                                                  text:
-                                                      "John Doe requested payment of "),
-                                              TextSpan(
-                                                  style: TextStyle(
-                                                      color: appColor,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                  text: "\$200")
-                                            ])),
-                                        SizedBox(
-                                          height: 8,
-                                        ),
+                                            text: TextSpan(style: TextStyle(color: Colors.black), children: [
+                                          TextSpan(text: "John Doe requested payment of "),
+                                          TextSpan(style: TextStyle(color: appColor, fontWeight: FontWeight.bold), text: "\$200")
+                                        ])),
+                                        SizedBox(height: 8),
                                         Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            SizedBox(
-                                              height: 8,
-                                            ),
                                             InkWell(
                                               onTap: () {
                                                 idx = index;
@@ -321,27 +233,17 @@ class _NotificationsState extends State<Notifications> {
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                    color: idx == index &&
-                                                            accept
-                                                        ? appColor
-                                                        : Colors.transparent,
-                                                    border: Border.all(
-                                                        color: appColor),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8)),
-                                                padding: EdgeInsets.all(8),
+                                                    color: idx == index && accept ? appColor : Colors.transparent,
+                                                    border: Border.all(color: appColor),
+                                                    borderRadius: BorderRadius.circular(8)),
+                                                padding: EdgeInsets.all(3),
                                                 child: CustomText(
                                                   text: "Accept",
-                                                  color: idx == index && accept
-                                                      ? Colors.white
-                                                      : null,
+                                                  color: idx == index && accept ? Colors.white : null,
                                                 ),
                                               ),
                                             ),
-                                            SizedBox(
-                                              width: 15,
-                                            ),
+                                            SizedBox(width: 50),
                                             InkWell(
                                               onTap: () {
                                                 idx = index;
@@ -351,21 +253,13 @@ class _NotificationsState extends State<Notifications> {
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                    color: idx == index &&
-                                                            decline
-                                                        ? appColor
-                                                        : Colors.transparent,
-                                                    border: Border.all(
-                                                        color: appColor),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8)),
-                                                padding: EdgeInsets.all(8),
+                                                    color: idx == index && decline ? appColor : Colors.transparent,
+                                                    border: Border.all(color: appColor),
+                                                    borderRadius: BorderRadius.circular(8)),
+                                                padding: EdgeInsets.all(3),
                                                 child: CustomText(
                                                   text: "Decline",
-                                                  color: idx == index && decline
-                                                      ? Colors.white
-                                                      : null,
+                                                  color: idx == index && decline ? Colors.white : null,
                                                 ),
                                               ),
                                             )
@@ -374,9 +268,7 @@ class _NotificationsState extends State<Notifications> {
                                       ],
                                     ),
                                   ),
-                                  CustomText(
-                                    text: time,
-                                  ),
+                                  CustomText(text: time),
                                 ],
                               ),
                             );

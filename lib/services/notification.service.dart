@@ -1,5 +1,4 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:get/get.dart';
 
 class NotificationService {
   //
@@ -37,11 +36,11 @@ class NotificationService {
   }
 
   static listenToActions() {
-    AwesomeNotifications().actionStream.listen((receivedNotification) async {
+    /* AwesomeNotifications().actionStream.listen((receivedNotification) async {
       //if notification is from order
       if (receivedNotification.payload != null) {
         // Get.to(LatestNews());
       }
-    });
+    });*/
   }
 }

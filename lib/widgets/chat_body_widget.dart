@@ -14,20 +14,13 @@ class ChatBodyWidget extends StatelessWidget {
             width: double.infinity,
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: gd3,
               image: DecorationImage(image: AssetImage(stickers)),
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(25),
                 topRight: Radius.circular(25),
               ),
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [appColor, gd2, gd3, gd4, gd5],
-                  stops: [0.02, 0.2, 0.6, 0.8, 1.0]),
             ),
-            child: Messages(
-              username: "",
-            )),
+            child: Messages(username: "")),
       );
 }

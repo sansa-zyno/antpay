@@ -15,10 +15,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class ChatMessages extends StatefulWidget {
-  List<BaseMessage> data;
-  User me;
-  String type;
-  AppEntity conversationWith;
+  final List<BaseMessage> data;
+  final User me;
+  final String type;
+  final AppEntity conversationWith;
 
   ChatMessages({
     required this.data,
@@ -107,8 +107,7 @@ class _ChatMessagesState extends State<ChatMessages> {
                             ),
                             Text(
                               textMessage.text,
-                              style: TextStyle(
-                                  fontSize: 16.0, fontFamily: "Helvetica"),
+                              style: TextStyle(fontSize: 16.0, fontFamily: "Helvetica"),
                             ),
                           ],
                         ),
@@ -171,8 +170,7 @@ class _ChatMessagesState extends State<ChatMessages> {
                       widget.type != ConversationType.user
                           ? Text(
                               (widget.me.name),
-                              style: TextStyle(
-                                  fontSize: 16, color: Color(0xFFD4A3FF)),
+                              style: TextStyle(fontSize: 16, color: Color(0xFFD4A3FF)),
                             )
                           : Container()
                     ],
@@ -189,11 +187,9 @@ class _ChatMessagesState extends State<ChatMessages> {
                             width: 40,
                             imageUrl: widget.me.avatar ?? "",
                             fit: BoxFit.fill,
-                            progressIndicatorBuilder:
-                                (context, url, progress) => Center(
-                                      child: CircularProgressIndicator(
-                                          value: progress.progress),
-                                    )))
+                            progressIndicatorBuilder: (context, url, progress) => Center(
+                                  child: CircularProgressIndicator(value: progress.progress),
+                                )))
                     : Container()
               ],
             ),
@@ -215,11 +211,9 @@ class _ChatMessagesState extends State<ChatMessages> {
                                 ? (widget.conversationWith as User).avatar ?? ""
                                 : textMessage.sender!.avatar ?? "",
                             fit: BoxFit.fill,
-                            progressIndicatorBuilder:
-                                (context, url, progress) => Center(
-                                      child: CircularProgressIndicator(
-                                          value: progress.progress),
-                                    )))
+                            progressIndicatorBuilder: (context, url, progress) => Center(
+                                  child: CircularProgressIndicator(value: progress.progress),
+                                )))
                     : Container(),
                 SizedBox(
                   width: 8,
@@ -286,8 +280,7 @@ class _ChatMessagesState extends State<ChatMessages> {
                             ),
                             Text(
                               textMessage.text,
-                              style: TextStyle(
-                                  fontSize: 16.0, fontFamily: "Helvetica"),
+                              style: TextStyle(fontSize: 16.0, fontFamily: "Helvetica"),
                             ),
                           ],
                         ),
@@ -302,11 +295,8 @@ class _ChatMessagesState extends State<ChatMessages> {
                       SizedBox(height: 8),
                       widget.type != ConversationType.user
                           ? Text(
-                              widget.type == ConversationType.user
-                                  ? (widget.conversationWith as User).name
-                                  : textMessage.sender!.name,
-                              style: TextStyle(
-                                  fontSize: 16, color: Color(0xffADFFE1)),
+                              widget.type == ConversationType.user ? (widget.conversationWith as User).name : textMessage.sender!.name,
+                              style: TextStyle(fontSize: 16, color: Color(0xffADFFE1)),
                             )
                           : Container()
                     ],
@@ -323,8 +313,7 @@ class _ChatMessagesState extends State<ChatMessages> {
     return mediaMessage.attachment != null
         ? mediaMessage.sender!.uid == widget.me.uid.toLowerCase()
             ? Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -336,15 +325,10 @@ class _ChatMessagesState extends State<ChatMessages> {
                         InkWell(
                           onTap: () async {
                             final url = mediaMessage.attachment!.fileUrl;
-                            final filename = mediaMessage.attachment!.fileUrl
-                                .split("/")
-                                .last;
-                            var request =
-                                await HttpClient().getUrl(Uri.parse(url));
+                            final filename = mediaMessage.attachment!.fileUrl.split("/").last;
+                            var request = await HttpClient().getUrl(Uri.parse(url));
                             var response = await request.close();
-                            var bytes =
-                                await consolidateHttpClientResponseBytes(
-                                    response);
+                            var bytes = await consolidateHttpClientResponseBytes(response);
                             var dir = await getApplicationDocumentsDirectory();
                             File file = File("${dir.path}/$filename");
                             await file.writeAsBytes(bytes, flush: true);
@@ -385,30 +369,23 @@ class _ChatMessagesState extends State<ChatMessages> {
                               SizedBox(
                                 height: 8,
                               ),
-                              mediaMessage.attachment != null &&
-                                      mediaMessage.attachment!.fileUrl != ""
-                                  ? imageExtensions.contains(mediaMessage
-                                          .attachment!.fileExtension)
+                              mediaMessage.attachment != null && mediaMessage.attachment!.fileUrl != ""
+                                  ? imageExtensions.contains(mediaMessage.attachment!.fileExtension)
                                       ? ClipRRect(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(8)),
+                                          borderRadius: BorderRadius.all(Radius.circular(8)),
                                           child: Image.network(
                                             mediaMessage.attachment!.fileUrl,
                                             height: 90,
                                           ),
                                         )
                                       : Container(
-                                          constraints:
-                                              BoxConstraints(maxWidth: 200),
+                                          constraints: BoxConstraints(maxWidth: 200),
                                           child: Text(
-                                            mediaMessage.attachment!.fileUrl
-                                                .split("/")
-                                                .last,
+                                            mediaMessage.attachment!.fileUrl.split("/").last,
                                             style: TextStyle(
                                                 fontSize: 16.0,
                                                 color: Color(0xFFD4A3FF),
-                                                decoration:
-                                                    TextDecoration.underline,
+                                                decoration: TextDecoration.underline,
                                                 fontFamily: "Helvetica"),
                                           ),
                                         )
@@ -455,8 +432,7 @@ class _ChatMessagesState extends State<ChatMessages> {
                                               color: Colors.grey,
                                             ),
                                             Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 10),
+                                              padding: EdgeInsets.only(left: 10),
                                               child: Icon(
                                                 Icons.check,
                                                 color: Colors.grey,
@@ -491,18 +467,15 @@ class _ChatMessagesState extends State<ChatMessages> {
                                 width: 40,
                                 imageUrl: widget.me.avatar ?? "",
                                 fit: BoxFit.fill,
-                                progressIndicatorBuilder:
-                                    (context, url, progress) => Center(
-                                          child: CircularProgressIndicator(
-                                              value: progress.progress),
-                                        )))
+                                progressIndicatorBuilder: (context, url, progress) => Center(
+                                      child: CircularProgressIndicator(value: progress.progress),
+                                    )))
                         : Container()
                   ],
                 ),
               )
             : Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -516,16 +489,12 @@ class _ChatMessagesState extends State<ChatMessages> {
                                 height: 40,
                                 width: 40,
                                 imageUrl: widget.type == ConversationType.user
-                                    ? (widget.conversationWith as User)
-                                            .avatar ??
-                                        ""
+                                    ? (widget.conversationWith as User).avatar ?? ""
                                     : mediaMessage.sender!.avatar ?? "",
                                 fit: BoxFit.fill,
-                                progressIndicatorBuilder:
-                                    (context, url, progress) => Center(
-                                          child: CircularProgressIndicator(
-                                              value: progress.progress),
-                                        )))
+                                progressIndicatorBuilder: (context, url, progress) => Center(
+                                      child: CircularProgressIndicator(value: progress.progress),
+                                    )))
                         : Container(),
                     SizedBox(
                       width: 8,
@@ -536,15 +505,10 @@ class _ChatMessagesState extends State<ChatMessages> {
                         InkWell(
                           onTap: () async {
                             final url = mediaMessage.attachment!.fileUrl;
-                            final filename = mediaMessage.attachment!.fileUrl
-                                .split("/")
-                                .last;
-                            var request =
-                                await HttpClient().getUrl(Uri.parse(url));
+                            final filename = mediaMessage.attachment!.fileUrl.split("/").last;
+                            var request = await HttpClient().getUrl(Uri.parse(url));
                             var response = await request.close();
-                            var bytes =
-                                await consolidateHttpClientResponseBytes(
-                                    response);
+                            var bytes = await consolidateHttpClientResponseBytes(response);
                             var dir = await getApplicationDocumentsDirectory();
                             File file = File("${dir.path}/$filename");
                             await file.writeAsBytes(bytes, flush: true);
@@ -583,30 +547,23 @@ class _ChatMessagesState extends State<ChatMessages> {
                               SizedBox(
                                 height: 8,
                               ),
-                              mediaMessage.attachment != null &&
-                                      mediaMessage.attachment!.fileUrl != ""
-                                  ? imageExtensions.contains(mediaMessage
-                                          .attachment!.fileExtension)
+                              mediaMessage.attachment != null && mediaMessage.attachment!.fileUrl != ""
+                                  ? imageExtensions.contains(mediaMessage.attachment!.fileExtension)
                                       ? ClipRRect(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(8)),
+                                          borderRadius: BorderRadius.all(Radius.circular(8)),
                                           child: Image.network(
                                             mediaMessage.attachment!.fileUrl,
                                             height: 90,
                                           ),
                                         )
                                       : Container(
-                                          constraints:
-                                              BoxConstraints(maxWidth: 200),
+                                          constraints: BoxConstraints(maxWidth: 200),
                                           child: Text(
-                                            mediaMessage.attachment!.fileUrl
-                                                .split("/")
-                                                .last,
+                                            mediaMessage.attachment!.fileUrl.split("/").last,
                                             style: TextStyle(
                                                 fontSize: 16.0,
                                                 color: Color(0xffADFFE1),
-                                                decoration:
-                                                    TextDecoration.underline,
+                                                decoration: TextDecoration.underline,
                                                 fontFamily: "Helvetica"),
                                           ),
                                         )
@@ -624,11 +581,8 @@ class _ChatMessagesState extends State<ChatMessages> {
                         SizedBox(height: 8),
                         widget.type != ConversationType.user
                             ? Text(
-                                widget.type == ConversationType.user
-                                    ? (widget.conversationWith as User).name
-                                    : mediaMessage.sender!.name,
-                                style: TextStyle(
-                                    fontSize: 16, color: Color(0xffADFFE1)),
+                                widget.type == ConversationType.user ? (widget.conversationWith as User).name : mediaMessage.sender!.name,
+                                style: TextStyle(fontSize: 16, color: Color(0xffADFFE1)),
                               )
                             : Container()
                       ],
@@ -665,54 +619,41 @@ class _ChatMessagesState extends State<ChatMessages> {
               }
               bool isSameDate = true;
               DateTime dt = widget.data[index].sentAt != null
-                  ? DateTime.parse(
-                      widget.data[index].sentAt.toString().substring(0, 10))
+                  ? DateTime.parse(widget.data[index].sentAt.toString().substring(0, 10))
                   : DateTime.parse("1970-12-02");
               if (index == 0) {
                 isSameDate = false;
               } else {
                 DateTime dte = widget.data[index - 1].sentAt != null
-                    ? DateTime.parse(widget.data[index - 1].sentAt
-                        .toString()
-                        .substring(0, 10))
+                    ? DateTime.parse(widget.data[index - 1].sentAt.toString().substring(0, 10))
                     : DateTime.parse("1970-12-02"); //date of prev item
-                isSameDate =
-                    dt.compareTo(dte) == 0 ? true : false; //compare dates
+                isSameDate = dt.compareTo(dte) == 0 ? true : false; //compare dates
               }
 //index == 0 || !(isSameDate)
               if (index == 0 || !(isSameDate)) {
                 DateTime dt = widget.data[index].sentAt != null
-                    ? DateTime.parse(
-                        widget.data[index].sentAt.toString().substring(0, 10))
+                    ? DateTime.parse(widget.data[index].sentAt.toString().substring(0, 10))
                     : DateTime.parse("1970-12-02");
-                DateTime dateNow =
-                    DateTime.parse(DateTime.now().toString().substring(0, 10));
-                DateTime dtTime = widget.data[index].sentAt != null
-                    ? DateTime.parse(widget.data[index].sentAt.toString())
-                    : DateTime.parse("1970-12-02");
+                DateTime dateNow = DateTime.parse(DateTime.now().toString().substring(0, 10));
+                DateTime dtTime =
+                    widget.data[index].sentAt != null ? DateTime.parse(widget.data[index].sentAt.toString()) : DateTime.parse("1970-12-02");
                 String time = formatDate(dtTime, [hh, ':', nn, ' ', am]);
 
                 String date = dt.compareTo(dateNow) == 0
                     ? "Today"
-                    : "${dt.year} ${dt.month} ${dt.day}" ==
-                            "${dateNow.year} ${dateNow.month} ${(dateNow.day) - 1}"
+                    : "${dt.year} ${dt.month} ${dt.day}" == "${dateNow.year} ${dateNow.month} ${(dateNow.day) - 1}"
                         ? "Yesterday"
                         : formatDate(dt, [M, ' ', dd, ', ', yyyy]);
                 return Column(
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: widget.data[index].sender!.uid ==
-                            widget.me.uid.toLowerCase()
-                        ? CrossAxisAlignment.end
-                        : CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                        widget.data[index].sender!.uid == widget.me.uid.toLowerCase() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                     children: [
                       SizedBox(height: 8),
                       Center(
                         child: Text(
                           date,
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                       ),
                       SizedBox(height: 8),
@@ -751,8 +692,7 @@ class _ChatMessagesState extends State<ChatMessages> {
                           : widget.data[index] is MediaMessage
                               ? InkWell(
                                   onTap: () {
-                                    appProvider.updateVal(
-                                        "", "", false, "", "");
+                                    appProvider.updateVal("", "", false, "", "");
                                   },
                                   onLongPress: () {
                                     idx = index;
@@ -772,9 +712,7 @@ class _ChatMessagesState extends State<ChatMessages> {
                                             ? Colors.blue[100]
                                             : Colors.transparent
                                         : Colors.transparent,
-                                    child: imageMessageTile(
-                                        widget.data[index] as MediaMessage,
-                                        time),
+                                    child: imageMessageTile(widget.data[index] as MediaMessage, time),
                                   ),
                                 )
                               /* : widget.data[index] is Action
@@ -800,9 +738,8 @@ class _ChatMessagesState extends State<ChatMessages> {
                               : Container()
                     ]);
               } else {
-                DateTime dtTime = widget.data[index].sentAt != null
-                    ? DateTime.parse(widget.data[index].sentAt.toString())
-                    : DateTime.parse("1970-12-02");
+                DateTime dtTime =
+                    widget.data[index].sentAt != null ? DateTime.parse(widget.data[index].sentAt.toString()) : DateTime.parse("1970-12-02");
                 String time = formatDate(dtTime, [hh, ':', nn, ' ', am]);
                 return widget.data[index] is TextMessage
                     ? InkWell(
@@ -858,8 +795,7 @@ class _ChatMessagesState extends State<ChatMessages> {
                                       ? Colors.blue[100]
                                       : Colors.transparent
                                   : Colors.transparent,
-                              child: imageMessageTile(
-                                  widget.data[index] as MediaMessage, time),
+                              child: imageMessageTile(widget.data[index] as MediaMessage, time),
                             ),
                           )
                         /*: widget.data[index] is Action

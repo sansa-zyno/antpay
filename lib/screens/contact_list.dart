@@ -1,6 +1,6 @@
 import 'package:ant_pay/constants/app_colors.dart';
 import 'package:ant_pay/constants/app_images.dart';
-import 'package:ant_pay/helpers/common.dart';
+import 'package:ant_pay/utils/navigation.dart';
 import 'package:ant_pay/providers/app_provider.dart';
 import 'package:ant_pay/providers/user_controller.dart';
 import 'package:ant_pay/screens/chat/chat_screen.dart';
@@ -28,14 +28,7 @@ class _ContactListState extends State<ContactList> {
     AppProvider appProvider = Provider.of<AppProvider>(context);
     UserController userController = Provider.of<UserController>(context);
     return Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage(stickers)),
-          gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [appColor, gd2, gd3, gd4, gd5],
-              stops: [0.02, 0.2, 0.6, 0.8, 1.0]),
-        ),
+        decoration: BoxDecoration(image: DecorationImage(image: AssetImage(stickers)), color: gd3),
         child: RefreshIndicator(
           onRefresh: () async {
             await appProvider.getContacts();
@@ -103,10 +96,7 @@ class _ContactListState extends State<ContactList> {
                             width: 65,
                             margin: EdgeInsets.only(right: 25),
                             padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                                color: Color(0xff6E01CE),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all()),
+                            decoration: BoxDecoration(color: Color(0xff6E01CE), borderRadius: BorderRadius.circular(8), border: Border.all()),
                             child: Row(
                               children: [
                                 Icon(
@@ -136,12 +126,7 @@ class _ContactListState extends State<ContactList> {
                       decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(8)),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.withOpacity(0.3),
-                                blurRadius: 10,
-                                offset: Offset(2, 2))
-                          ]),
+                          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.3), blurRadius: 10, offset: Offset(2, 2))]),
                       child: Row(
                         children: [
                           Expanded(
@@ -152,11 +137,9 @@ class _ContactListState extends State<ContactList> {
                               decoration: new InputDecoration(
                                   prefix: Text("   "),
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 15),
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                                   alignLabelWithHint: false,
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.auto,
+                                  floatingLabelBehavior: FloatingLabelBehavior.auto,
                                   hintText: 'Search Contacts',
                                   labelStyle: TextStyle(
                                     fontFamily: "Nunito",
@@ -180,60 +163,33 @@ class _ContactListState extends State<ContactList> {
                                   return ListTile(
                                     onTap: () {
                                       User me = User(
-                                          uid: userController
-                                              .getCurrentUser.uid!
-                                              .toLowerCase(),
-                                          name: userController
-                                              .getCurrentUser.displayName!,
-                                          avatar: userController
-                                              .getCurrentUser.avatarUrl);
+                                          uid: userController.getCurrentUser.uid!.toLowerCase(),
+                                          name: userController.getCurrentUser.displayName!,
+                                          avatar: userController.getCurrentUser.avatarUrl);
                                       User recipient = User(
-                                          uid: appProvider.contacts![index]
-                                                  ["doc"]["uid"]
-                                              .toString()
-                                              .toLowerCase(),
-                                          name: appProvider.contacts![index]
-                                              ["name"],
-                                          avatar: appProvider.contacts![index]
-                                              ["doc"]["avatarUrl"]);
-                                      appProvider.getChatData(recipient.uid,
-                                          ConversationType.user, true);
+                                          uid: appProvider.contacts![index]["doc"]["uid"].toString().toLowerCase(),
+                                          name: appProvider.contacts![index]["name"],
+                                          avatar: appProvider.contacts![index]["doc"]["avatarUrl"]);
+                                      appProvider.getChatData(recipient.uid, ConversationType.user, true);
                                       changeScreen(
-                                          context,
-                                          ChatScreen(
-                                              me: me,
-                                              type: ConversationType.user,
-                                              conversationWith: recipient,
-                                              conversationId: ""));
+                                          context, ChatScreen(me: me, type: ConversationType.user, conversationWith: recipient, conversationId: ""));
                                     },
                                     leading: Container(
                                       width: 50,
                                       decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Color(0xff6E01CE),
-                                              width: 3),
+                                          border: Border.all(color: Color(0xff6E01CE), width: 3),
                                           shape: BoxShape.circle,
                                           image: DecorationImage(
-                                              image: NetworkImage(
-                                                  appProvider.contacts![index]
-                                                      ["doc"]["avatarUrl"]),
-                                              fit: BoxFit.cover)),
+                                              image: NetworkImage(appProvider.contacts![index]["doc"]["avatarUrl"]), fit: BoxFit.cover)),
                                     ),
-                                    title: CustomText(
-                                        text: appProvider.contacts![index]
-                                            ["name"]),
+                                    title: CustomText(text: appProvider.contacts![index]["name"]),
                                     subtitle: CustomText(
-                                      text: appProvider.contacts![index]["doc"]
-                                          ["status"],
+                                      text: appProvider.contacts![index]["doc"]["status"],
                                       color: Colors.black45,
                                     ),
                                     trailing: Container(
                                       margin: EdgeInsets.only(right: 8),
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Color(0xff6E01CE),
-                                              width: 1.5),
-                                          shape: BoxShape.circle),
+                                      decoration: BoxDecoration(border: Border.all(color: Color(0xff6E01CE), width: 1.5), shape: BoxShape.circle),
                                       width: 15,
                                     ),
                                   );

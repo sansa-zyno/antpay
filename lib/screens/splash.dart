@@ -1,6 +1,6 @@
 import 'package:ant_pay/constants/app_colors.dart';
 import 'package:ant_pay/constants/app_images.dart';
-import 'package:ant_pay/helpers/common.dart';
+import 'package:ant_pay/utils/navigation.dart';
 import 'package:ant_pay/screens/auth/authMain.dart';
 import 'package:ant_pay/widgets/GradientButton/GradientButton.dart';
 import 'package:ant_pay/widgets/custom_text.dart';
@@ -16,8 +16,7 @@ class Splash extends StatelessWidget {
       body: SingleChildScrollView(
         child: Container(
           decoration: BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage(stickers3), fit: BoxFit.cover),
+            image: DecorationImage(image: AssetImage(stickers3), fit: BoxFit.cover),
           ),
           child: Column(
             children: [
@@ -50,8 +49,7 @@ class Splash extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 50, right: 50),
                 child: CustomText(
-                  text:
-                      "By tapping Sign Up you agree to our Terms of service and privacy policy ",
+                  text: "By tapping Sign Up you agree to our Terms of service and privacy policy ",
                   textAlign: TextAlign.center,
                 ),
               ),

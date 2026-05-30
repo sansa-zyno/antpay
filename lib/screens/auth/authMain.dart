@@ -1,20 +1,16 @@
-import 'dart:convert';
 import 'dart:developer';
-import 'package:ant_pay/constants/api.dart';
 import 'package:ant_pay/constants/app_strings.dart';
-import 'package:ant_pay/helpers/common.dart';
+import 'package:ant_pay/utils/navigation.dart';
 import 'package:ant_pay/providers/app_provider.dart';
 import 'package:ant_pay/providers/user_controller.dart';
-import 'package:ant_pay/screens/auth/signup.dart';
+import 'package:ant_pay/screens/auth/sign_in.dart';
 import 'package:ant_pay/screens/auth/verification.dart';
-import 'package:ant_pay/screens/home.dart';
-import 'package:ant_pay/screens/profile_setup.dart';
-import 'package:ant_pay/services/http.service.dart';
+import 'package:ant_pay/screens/bottom_navbar.dart';
+import 'package:ant_pay/screens/profile/profile_setup.dart';
 import 'package:cometchat/cometchat_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart' hide Response;
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:page_transition/page_transition.dart';
@@ -30,25 +26,23 @@ class AuthMain extends StatefulWidget {
 class _AuthMainState extends State<AuthMain> {
   final TextEditingController _otp = TextEditingController();
   final TextEditingController _phoneNumber = TextEditingController();
-  bool isLoggedIn = false;
   bool otpSent = false;
-  String? uid;
   late String _verificationId;
 
   void _verifyOTP() async {
-    final credential = PhoneAuthProvider.credential(
-        verificationId: _verificationId, smsCode: _otp.text);
+    final credential = PhoneAuthProvider.credential(verificationId: _verificationId, smsCode: _otp.text);
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       log("firebase user: ${userCredential.user}");
-
       if (FirebaseAuth.instance.currentUser != null) {
-        setState(() {
-          isLoggedIn = true;
-          uid = FirebaseAuth.instance.currentUser!.uid;
-        });
+        String uid = FirebaseAuth.instance.currentUser!.uid;
+        QuerySnapshot snap = await FirebaseFirestore.instance.collection("users").where("uid", isEqualTo: uid).get();
+        if (snap.docs.isNotEmpty) {
+          //await loginOnAntpay(context);
+          loginUser(uid, context);
+        } else {
+          changeScreen(context, ProfileSetup(uid: uid));
+        }
       } else {
         AchievementView(
           color: Colors.red,
@@ -64,33 +58,11 @@ class _AuthMainState extends State<AuthMain> {
       }
     } catch (e) {
       log("Following error was thrown while trying to authenticate the OTP : ${e.toString()}.");
-      Get.defaultDialog(
-          title: "Error!",
-          middleText:
-              "Following error was thrown while trying to authenticate the OTP : ${e.toString()}");
-    }
-
-    if (uid != null) {
-      try {
-        QuerySnapshot snap = await FirebaseFirestore.instance
-            .collection("users")
-            .where("uid", isEqualTo: uid)
-            .get();
-        if (snap.docs.isNotEmpty) {
-          //await loginOnAntpay(context);
-          loginUser(uid!, context);
-        } else {
-          changeScreen(context, ProfileSetup(uid: uid!));
-        }
-      } catch (e) {
-        log("Error in fetching user data. ${e.toString()}");
-      }
+      Get.defaultDialog(title: "Error!", middleText: "Following error was thrown while trying to authenticate the OTP : ${e.toString()}");
     }
   }
 
   void _sendOTP(String countrySel, String dialCode) async {
-    log(countrySel);
-    log(dialCode);
     log("${dialCode + _phoneNumber.text}");
     await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: "${dialCode + _phoneNumber.text}",
@@ -143,27 +115,26 @@ class _AuthMainState extends State<AuthMain> {
       isCircle: true,
     ).show(context);
     setState(() {
-      isLoggedIn = false;
       otpSent = false;
     });
   }
 
   void verificationCompleted(PhoneAuthCredential credential) async {
-    /* log("verification completed callback called now");
+    /*log("verification completed callback called now");
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       log("userCredential.user: ${userCredential.user}");
       if (FirebaseAuth.instance.currentUser != null) {
-        log("inside the user not null");
-        setState(() {
-          isLoggedIn = true;
-          uid = FirebaseAuth.instance.currentUser!.uid;
-          log("userid: $uid");
-        });
+        String uid=FirebaseAuth.instance.currentUser!.uid;
+        QuerySnapshot snap = await FirebaseFirestore.instance.collection("users").where("uid", isEqualTo: uid).get();
+        if (snap.docs.isNotEmpty) {
+         //await loginOnAntpay(context);
+          loginUser(uid, context);
+        } else {
+          changeScreen(context, ProfileSetup(uid: uid));
+        }
       } else {
         AchievementView(
-          context,
           color: Colors.red,
           icon: const Icon(
             FontAwesomeIcons.bug,
@@ -173,33 +144,11 @@ class _AuthMainState extends State<AuthMain> {
           elevation: 20,
           subTitle: "Could not fetch the OTP",
           isCircle: true,
-        ).show();
+        ).show(context);
       }
     } catch (e) {
       log("Following error was thrown while trying to authenticate the OTP : ${e.toString()}.");
-      Get.defaultDialog(
-          title: "Error!",
-          middleText:
-              "Following error was thrown while trying to authenticate the OTP : ${e.toString()}.");
-    }
-    if (uid != null) {
-      try {
-        QuerySnapshot snap = await FirebaseFirestore.instance
-            .collection("users")
-            .where("uid", isEqualTo: uid)
-            .get();
-        if (snap.docs.isNotEmpty) {
-          UserController _currentUser =
-              Provider.of<UserController>(context, listen: false);
-          _currentUser.getCurrentUserInfo();
-          //setStatusOnline();
-          loginUser(uid!, context);
-        } else {
-          changeScreen(context, ProfileSetup(uid: uid!));
-        }
-      } catch (e) {
-        log("Error in fetching user data. ${e.toString()}");
-      }
+      Get.defaultDialog(title: "Error!", middleText: "Following error was thrown while trying to authenticate the OTP : ${e.toString()}.");
     }*/
   }
 
@@ -212,19 +161,16 @@ class _AuthMainState extends State<AuthMain> {
             onpressed: _verifyOTP,
             resendOtp: _sendOTP,
           )
-        : SignUp(
+        : SignIn(
             onpressed: _sendOTP,
             phone: _phoneNumber,
           );
   }
 
-  Future loginOnAntpay(BuildContext context) async {
+  /*Future<void> loginOnAntpay(BuildContext context) async {
     AppProvider appProvider = Provider.of<AppProvider>(context, listen: false);
     log("log called");
-    DocumentSnapshot doc = await FirebaseFirestore.instance
-        .collection("users")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
+    DocumentSnapshot doc = await FirebaseFirestore.instance.collection("users").doc(FirebaseAuth.instance.currentUser!.uid).get();
     if (doc["isReadyForTxn"]) {
       Response response = await HttpService.postRequest(Api.login, {
         "email": doc["email"],
@@ -235,11 +181,10 @@ class _AuthMainState extends State<AuthMain> {
       if (result["status"]) {
         appProvider.setToken(result["data"]["token"]);
       } else {
-        Get.defaultDialog(
-            title: "Error", middleText: "There was an error login user");
+        Get.defaultDialog(title: "Error", middleText: "There was an error login user");
       }
     }
-  }
+  }*/
 
   //Login User function must pass userid and authkey should be used only while developing
   loginUser(String userId, BuildContext context) async {
@@ -250,8 +195,7 @@ class _AuthMainState extends State<AuthMain> {
       }
     } catch (_) {}
 
-    await CometChat.login(userId, cometchatAuthKey,
-        onSuccess: (ct.User loggedInUser) {
+    await CometChat.login(userId, cometchatAuthKey, onSuccess: (ct.User loggedInUser) {
       debugPrint("Login Successful : $loggedInUser");
       _user = loggedInUser;
     }, onError: (CometChatException e) {
@@ -262,16 +206,16 @@ class _AuthMainState extends State<AuthMain> {
     if (_user != null) {
       AppProvider _app = Provider.of<AppProvider>(context, listen: false);
       _app.conversationData();
-      UserController _currentUser =
-          Provider.of<UserController>(context, listen: false);
+      UserController _currentUser = Provider.of<UserController>(context, listen: false);
       _currentUser.getCurrentUserInfo();
       Navigator.push(
         context,
         PageTransition(
-            type: PageTransitionType.rightToLeft,
-            duration: Duration(milliseconds: 200),
-            curve: Curves.easeIn,
-            child: Home()),
+          type: PageTransitionType.rightToLeft,
+          duration: Duration(milliseconds: 200),
+          curve: Curves.easeIn,
+          child: BottomNavbar(),
+        ),
       );
     }
   }

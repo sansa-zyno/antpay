@@ -1,0 +1,2 @@
+/Users/macbookpro/Desktop/backup/portfolio/My Flutter Projects/others/ant pay/ant_pay/android/app/.cxx/Debug/3j1q2w31/x86_64/CMakeFiles/edit_cache.dir
+/Users/macbookpro/Desktop/backup/portfolio/My Flutter Projects/others/ant pay/ant_pay/android/app/.cxx/Debug/3j1q2w31/x86_64/CMakeFiles/rebuild_cache.dir

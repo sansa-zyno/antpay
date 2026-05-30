@@ -1,12 +1,12 @@
 import 'dart:math';
 import 'package:ant_pay/constants/app_strings.dart';
-import 'package:ant_pay/screens/callscreens/video_call_screen.dart';
+import 'package:ant_pay/screens/call/video_call_screen.dart';
 import 'package:ant_pay/services/call_history.dart';
 import 'package:cometchat/cometchat_sdk.dart' hide Call;
 import 'package:flutter/material.dart';
 import 'package:ant_pay/models/call.dart';
 import 'package:ant_pay/services/call_methods.dart';
-import 'package:ant_pay/screens/callscreens/voice_call_screen.dart';
+import 'package:ant_pay/screens/call/voice_call_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -14,8 +14,7 @@ class CallUtils {
   static final CallMethods callMethods = CallMethods();
 
   static getAgoraToken(String channelId) async {
-    var response = await http.get(
-        Uri.parse("$agoraTokenServerUrl/access_token?channelName=$channelId"));
+    var response = await http.get(Uri.parse("$agoraTokenServerUrl/access_token?channelName=$channelId"));
     String token = jsonDecode(response.body)["token"];
     return token;
   }

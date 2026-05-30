@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 
 class CurvedTextField extends StatelessWidget {
   final String? hint;
-  String? label;
-  Color? focusedColor;
-  Color? disabledColor;
-  Color? enabledColor;
-  Color? iconColor;
-  TextEditingController? controller;
-  TextInputType? type;
-  bool? obsecureText;
-  Icon? icon;
-  Function? onEditingComplete;
-  Function(String)? onChange;
-  int? maxLines;
-  String? Function(String?)? validator;
+  final String? label;
+  final Color? focusedColor;
+  final Color? disabledColor;
+  final Color? enabledColor;
+  final Color? iconColor;
+  final TextEditingController? controller;
+  final TextInputType? type;
+  final bool? obsecureText;
+  final Icon? icon;
+  final Function? onEditingComplete;
+  final Function(String)? onChange;
+  final int? maxLines;
+  final String? Function(String?)? validator;
 
   CurvedTextField(
       {this.controller,
@@ -38,12 +38,7 @@ class CurvedTextField extends StatelessWidget {
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(8)),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.grey.withOpacity(0.3),
-                blurRadius: 10,
-                offset: Offset(2, 2))
-          ]),
+          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.3), blurRadius: 10, offset: Offset(2, 2))]),
       child: TextFormField(
         controller: controller,
         keyboardType: type ?? TextInputType.text,

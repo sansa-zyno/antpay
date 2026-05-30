@@ -1,8 +1,6 @@
 import 'package:ant_pay/constants/app_colors.dart';
 import 'package:ant_pay/constants/app_images.dart';
-import 'package:ant_pay/helpers/common.dart';
 import 'package:ant_pay/providers/app_provider.dart';
-import 'package:ant_pay/screens/profile_setup.dart';
 import 'package:ant_pay/widgets/GradientButton/GradientButton.dart';
 import 'package:ant_pay/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
@@ -11,16 +9,12 @@ import 'package:flutter_countdown_timer/index.dart';
 import 'package:provider/provider.dart';
 
 class Verification extends StatefulWidget {
-  TextEditingController otp;
-  Function() onpressed;
-  Function resendOtp;
-  String number;
+  final TextEditingController otp;
+  final Function() onpressed;
+  final Function resendOtp;
+  final String number;
 
-  Verification(
-      {required this.otp,
-      required this.onpressed,
-      required this.number,
-      required this.resendOtp});
+  Verification({required this.otp, required this.onpressed, required this.number, required this.resendOtp});
 
   @override
   State<Verification> createState() => _VerificationState();
@@ -56,14 +50,7 @@ class _VerificationState extends State<Verification> {
   Widget build(BuildContext context) {
     AppProvider appProvider = Provider.of<AppProvider>(context);
     return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(image: AssetImage(stickers)),
-        gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [appColor, gd2, gd3, gd4, gd5],
-            stops: [0.02, 0.2, 0.6, 0.8, 1.0]),
-      ),
+      decoration: BoxDecoration(image: DecorationImage(image: AssetImage(stickers)), color: gd3),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Stack(
@@ -124,33 +111,21 @@ class _VerificationState extends State<Verification> {
                       height: 70,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(left: 20),
+                      padding: const EdgeInsets.only(left: 30),
                       child: CustomText(
-                          text:
-                              "Enter the 6-digit code we just sent to ${widget.number == "" ? "you" : "${appProvider.dialcode + widget.number}"}",
+                          text: "Enter the 6-digit code we just sent to ${widget.number == "" ? "you" : "${appProvider.dialcode + widget.number}"}",
                           textAlign: TextAlign.center),
                     ),
                     SizedBox(
                       height: 60,
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: Container(
-                        alignment: Alignment.centerLeft,
-                        width: double.infinity,
-                        child: Pinput(
-                          length: 6,
-                          defaultPinTheme: PinTheme(
-                              height: 50,
-                              width: 50,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8))),
-                          onSubmitted: (String pin) => {},
-                          focusNode: _pinPutFocusNode,
-                          controller: widget.otp,
-                        ),
-                      ),
+                    Pinput(
+                      length: 6,
+                      defaultPinTheme:
+                          PinTheme(height: 50, width: 50, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8))),
+                      onSubmitted: (String pin) => {},
+                      focusNode: _pinPutFocusNode,
+                      controller: widget.otp,
                     ),
                     SizedBox(
                       height: 25,
@@ -159,24 +134,17 @@ class _VerificationState extends State<Verification> {
                       height: 100,
                     ),
                     _times != 0
-                        ? GradientButton(
-                            title: "Continue",
-                            textClr: Colors.white,
-                            clrs: [appColor, appColor],
-                            onpressed: widget.onpressed)
+                        ? GradientButton(title: "Continue", textClr: Colors.white, clrs: [appColor, appColor], onpressed: widget.onpressed)
                         : GradientButton(
                             title: "Resend Code",
                             textClr: Colors.white,
                             clrs: [appColor, appColor],
                             onpressed: () {
-                              endTime = DateTime.now().millisecondsSinceEpoch +
-                                  1000 * 60;
+                              endTime = DateTime.now().millisecondsSinceEpoch + 1000 * 60;
                               _times = 60;
-                              controller = CountdownTimerController(
-                                  endTime: endTime, onEnd: onEnd);
+                              controller = CountdownTimerController(endTime: endTime, onEnd: onEnd);
                               setState(() {});
-                              widget.resendOtp(appProvider.countrySelected,
-                                  appProvider.dialcode);
+                              widget.resendOtp(appProvider.countrySelected, appProvider.dialcode);
                             },
                           ),
                     const SizedBox(height: 50),
@@ -188,9 +156,7 @@ class _VerificationState extends State<Verification> {
                           if (time == null) {
                             return Container();
                           }
-                          return CustomText(
-                              text:
-                                  "Re-Send Code In 0:${time.sec!.floor() < 10 ? "0" : ""}${time.sec!.floor()} ");
+                          return CustomText(text: "Re-Send Code In 0:${time.sec!.floor() < 10 ? "0" : ""}${time.sec!.floor()} ");
                         }),
                     SizedBox(
                       height: 50,

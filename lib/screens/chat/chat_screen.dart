@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:convert';
-import 'package:ant_pay/constants/app_images.dart';
 import 'package:ant_pay/providers/app_provider.dart';
 import 'package:ant_pay/providers/user_controller.dart';
 import 'package:ant_pay/screens/chat/chat_appbar.dart';
@@ -12,15 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
-  User me;
-  String type;
-  AppEntity conversationWith;
-  String conversationId;
-  ChatScreen(
-      {required this.me,
-      required this.type,
-      required this.conversationWith,
-      required this.conversationId});
+  final User me;
+  final String type;
+  final AppEntity conversationWith;
+  final String conversationId;
+  ChatScreen({required this.me, required this.type, required this.conversationWith, required this.conversationId});
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
@@ -41,19 +34,13 @@ class _ChatScreenState extends State<ChatScreen> with MessageListener {
   getUser() async {
     if (widget.type == ConversationType.user) {
       List uids = [];
-      QuerySnapshot snap =
-          await FirebaseFirestore.instance.collection("users").get();
+      QuerySnapshot snap = await FirebaseFirestore.instance.collection("users").get();
       for (int i = 0; i < snap.docs.length; i++) {
         uids.add(snap.docs[i]["uid"].toString());
       }
-      List res = uids
-          .where((element) =>
-              element.toString().toLowerCase() ==
-              (widget.conversationWith as User).uid)
-          .toList();
+      List res = uids.where((element) => element.toString().toLowerCase() == (widget.conversationWith as User).uid).toList();
       String userId = res[0];
-      UserController userController =
-          Provider.of<UserController>(context, listen: false);
+      UserController userController = Provider.of<UserController>(context, listen: false);
       userController.getUserInfo(userId);
     }
   }
@@ -73,10 +60,8 @@ class _ChatScreenState extends State<ChatScreen> with MessageListener {
       debugPrint("markAsRead unsuccessfull : ${e.message} ");
     });
     widget.type == ConversationType.user
-        ? appProvider.getChatData(
-            textMessage.sender!.uid, ConversationType.user, false)
-        : appProvider.getChatData((widget.conversationWith as Group).guid,
-            ConversationType.group, false);
+        ? appProvider.getChatData(textMessage.sender!.uid, ConversationType.user, false)
+        : appProvider.getChatData((widget.conversationWith as Group).guid, ConversationType.group, false);
   }
 
   @override
@@ -93,10 +78,8 @@ class _ChatScreenState extends State<ChatScreen> with MessageListener {
       debugPrint("markAsRead unsuccessfull : ${e.message} ");
     });
     widget.type == ConversationType.user
-        ? appProvider.getChatData(
-            mediaMessage.sender!.uid, ConversationType.user, false)
-        : appProvider.getChatData((widget.conversationWith as Group).guid,
-            ConversationType.group, false);
+        ? appProvider.getChatData(mediaMessage.sender!.uid, ConversationType.user, false)
+        : appProvider.getChatData((widget.conversationWith as Group).guid, ConversationType.group, false);
   }
 
   @override
@@ -113,30 +96,24 @@ class _ChatScreenState extends State<ChatScreen> with MessageListener {
       debugPrint("markAsRead unsuccessfull : ${e.message} ");
     });
     widget.type == ConversationType.user
-        ? appProvider.getChatData(
-            customMessage.sender!.uid, ConversationType.user, false)
-        : appProvider.getChatData((widget.conversationWith as Group).guid,
-            ConversationType.group, false);
+        ? appProvider.getChatData(customMessage.sender!.uid, ConversationType.user, false)
+        : appProvider.getChatData((widget.conversationWith as Group).guid, ConversationType.group, false);
   }
 
   @override
   void onMessagesDelivered(MessageReceipt messageReceipt) {
     // TODO: implement onMessagesDelivered
     widget.type == ConversationType.user
-        ? appProvider.getChatData(
-            messageReceipt.sender.uid, ConversationType.user, false)
-        : appProvider.getChatData((widget.conversationWith as Group).guid,
-            ConversationType.group, false);
+        ? appProvider.getChatData(messageReceipt.sender.uid, ConversationType.user, false)
+        : appProvider.getChatData((widget.conversationWith as Group).guid, ConversationType.group, false);
   }
 
   @override
   void onMessagesRead(MessageReceipt messageReceipt) {
     // TODO: implement onMessagesRead
     widget.type == ConversationType.user
-        ? appProvider.getChatData(
-            messageReceipt.sender.uid, ConversationType.user, false)
-        : appProvider.getChatData((widget.conversationWith as Group).guid,
-            ConversationType.group, false);
+        ? appProvider.getChatData(messageReceipt.sender.uid, ConversationType.user, false)
+        : appProvider.getChatData((widget.conversationWith as Group).guid, ConversationType.group, false);
   }
 
   @override
@@ -148,24 +125,14 @@ class _ChatScreenState extends State<ChatScreen> with MessageListener {
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width / 100;
-    final h = MediaQuery.of(context).size.height / 100;
     appProvider = Provider.of<AppProvider>(context);
 
     return Container(
       decoration: BoxDecoration(
           //image: DecorationImage(image: AssetImage(stickers3)),
           gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFF6E01CE), Color(0xFF1F0138)],
-              stops: [0.0, 1.0]),
-          boxShadow: [
-            BoxShadow(
-                color: Color.fromRGBO(0, 0, 0, 0.25),
-                offset: Offset(0, 4),
-                blurRadius: 4.0)
-          ]),
+              begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF6E01CE), Color(0xFF1F0138)], stops: [0.0, 1.0]),
+          boxShadow: [BoxShadow(color: Color.fromRGBO(0, 0, 0, 0.25), offset: Offset(0, 4), blurRadius: 4.0)]),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Stack(
@@ -183,21 +150,13 @@ class _ChatScreenState extends State<ChatScreen> with MessageListener {
                         me: widget.me,
                         conversationWith: widget.conversationWith,
                       ))
-                    : Align(
-                        alignment: Alignment.bottomCenter,
-                        child: CircularProgressIndicator()),
+                    : Align(alignment: Alignment.bottomCenter, child: CircularProgressIndicator()),
               ],
             ),
-            ChatAppBar(
-                me: widget.me,
-                type: widget.type,
-                conversationWith: widget.conversationWith),
+            ChatAppBar(me: widget.me, type: widget.type, conversationWith: widget.conversationWith),
             Align(
               alignment: Alignment.bottomCenter,
-              child: ChatBottomBar(
-                  me: widget.me,
-                  conversationWith: widget.conversationWith,
-                  type: widget.type),
+              child: ChatBottomBar(me: widget.me, conversationWith: widget.conversationWith, type: widget.type),
             ),
           ],
         ),

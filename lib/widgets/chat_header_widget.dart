@@ -1,12 +1,7 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'package:ant_pay/constants/app_images.dart';
-import 'package:ant_pay/helpers/common.dart';
+import 'package:ant_pay/utils/navigation.dart';
 import 'package:ant_pay/providers/user_controller.dart';
 import 'package:ant_pay/screens/notifications.dart';
-import 'package:ant_pay/screens/profile.dart';
-import 'package:ant_pay/services/http.service.dart';
-import 'package:dio/dio.dart';
+import 'package:ant_pay/screens/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -93,13 +88,9 @@ class _ChatHeaderWidgetState extends State<ChatHeaderWidget> {
                           ? Container(
                               decoration: BoxDecoration(
                                   color: Colors.white,
-                                  border: Border.all(
-                                      color: Color(0xff6E01CE), width: 3),
+                                  border: Border.all(color: Color(0xff6E01CE), width: 3),
                                   shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                      image: NetworkImage(userController
-                                          .getCurrentUser.avatarUrl!),
-                                      fit: BoxFit.cover)),
+                                  image: DecorationImage(image: NetworkImage(userController.getCurrentUser.avatarUrl!), fit: BoxFit.cover)),
                             )
                           : Center(child: CircularProgressIndicator())),
                 )

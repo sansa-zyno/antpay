@@ -1,14 +1,13 @@
 import 'package:ant_pay/constants/app_colors.dart';
 import 'package:ant_pay/constants/app_images.dart';
-import 'package:ant_pay/helpers/common.dart';
+import 'package:ant_pay/utils/navigation.dart';
 import 'package:ant_pay/screens/contact_list.dart';
 import 'package:ant_pay/widgets/chat_body_widget.dart';
 import 'package:ant_pay/widgets/chat_header_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ChatsPage extends StatelessWidget {
-  List<Map> users = [
+  final List<Map> users = [
     {"name": "Johnson Thompson okemuteeee", "avatar": male},
     {"name": "Bob Thompson", "avatar": female},
     {"name": "Johnson Marley", "avatar": male},
@@ -23,10 +22,12 @@ class ChatsPage extends StatelessWidget {
         backgroundColor: appColor,
         body: Stack(
           children: [
-            Positioned(
-                top: 0, left: 15, child: Image.asset(heart_red_2, width: 70)),
+            Positioned(top: 0, left: 15, child: Image.asset(heart_red_2, width: 70)),
             Column(
-              children: [ChatHeaderWidget(users: users), ChatBodyWidget()],
+              children: [
+                ChatHeaderWidget(users: users),
+                ChatBodyWidget(),
+              ],
             ),
           ],
         ),

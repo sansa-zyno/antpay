@@ -4,11 +4,11 @@ import 'package:ant_pay/services/local_storage.dart';
 import 'package:cometchat/cometchat_sdk.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_contacts_service/flutter_contacts_service.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:http/http.dart';
 import '../services/http.service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:contacts_service/contacts_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:developer';
 
@@ -47,13 +47,11 @@ class AppProvider extends ChangeNotifier {
 
   getContacts() async {
     PermissionStatus permission = await Permission.contacts.status;
-    if (permission != PermissionStatus.granted &&
-        permission != PermissionStatus.permanentlyDenied) {
+    if (permission != PermissionStatus.granted && permission != PermissionStatus.permanentlyDenied) {
       PermissionStatus status = await Permission.contacts.request();
       if (status == PermissionStatus.granted) {
         try {
-          List<Contact> foundContacts =
-              await ContactsService.getContacts(withThumbnails: false);
+          List<ContactInfo> foundContacts = await FlutterContactsService.getContacts(withThumbnails: false);
           log("done loading contacts" + foundContacts.length.toString());
           final list = foundContacts.toList();
           list.sort((a, b) => a.displayName!.compareTo(b.displayName!));
@@ -62,12 +60,10 @@ class AppProvider extends ChangeNotifier {
             if (list[i].phones!.isNotEmpty) {
               QuerySnapshot snap = await FirebaseFirestore.instance
                   .collection("users")
-                  .where("phoneNumber",
-                      isEqualTo: list[i].phones![0].value!.replaceAll(" ", ""))
+                  .where("phoneNumber", isEqualTo: list[i].phones![0].value!.replaceAll(" ", ""))
                   .get();
               if (snap.docs.isNotEmpty) {
-                contacts!
-                    .add({"name": list[i].displayName, "doc": snap.docs[0]});
+                contacts!.add({"name": list[i].displayName, "doc": snap.docs[0]});
                 notifyListeners();
               }
             }
@@ -79,8 +75,7 @@ class AppProvider extends ChangeNotifier {
       }
     } else {
       try {
-        List<Contact> foundContacts =
-            await ContactsService.getContacts(withThumbnails: false);
+        List<ContactInfo> foundContacts = await FlutterContactsService.getContacts(withThumbnails: false);
         debugPrint("done loading contacts" + foundContacts.length.toString());
         final list = foundContacts.toList();
         list.sort((a, b) => a.displayName!.compareTo(b.displayName!));
@@ -89,8 +84,7 @@ class AppProvider extends ChangeNotifier {
           if (list[i].phones!.isNotEmpty) {
             QuerySnapshot snap = await FirebaseFirestore.instance
                 .collection("users")
-                .where("phoneNumber",
-                    isEqualTo: list[i].phones![0].value!.replaceAll(" ", ""))
+                .where("phoneNumber", isEqualTo: list[i].phones![0].value!.replaceAll(" ", ""))
                 .get();
             if (snap.docs.isNotEmpty) {
               contacts!.add({"name": list[i].displayName, "doc": snap.docs[0]});
@@ -106,15 +100,13 @@ class AppProvider extends ChangeNotifier {
   }
 
   getStickers() async {
-    QuerySnapshot snap =
-        await FirebaseFirestore.instance.collection("stickers").get();
+    QuerySnapshot snap = await FirebaseFirestore.instance.collection("stickers").get();
     stickers = snap.docs[0]["stickers"];
     notifyListeners();
   }
 
   getCustomStickers() async {
-    QuerySnapshot snap =
-        await FirebaseFirestore.instance.collection("customStickers").get();
+    QuerySnapshot snap = await FirebaseFirestore.instance.collection("customStickers").get();
     customStickers = snap.docs[0]["stickers"];
     notifyListeners();
   }
@@ -155,8 +147,7 @@ class AppProvider extends ChangeNotifier {
     newPerson ? chatData = null : chatData = chatData;
     notifyListeners();
     if (type == ConversationType.user) {
-      MessagesRequest messageRequest =
-          (MessagesRequestBuilder()..uid = conversationWithUid).build();
+      MessagesRequest messageRequest = (MessagesRequestBuilder()..uid = conversationWithUid).build();
       messageRequest.fetchPrevious(onSuccess: (List<BaseMessage> list) {
         chatData = list;
         notifyListeners();
@@ -166,8 +157,7 @@ class AppProvider extends ChangeNotifier {
         // notifyListeners();
       });
     } else {
-      MessagesRequest messageRequest =
-          (MessagesRequestBuilder()..guid = conversationWithUid).build();
+      MessagesRequest messageRequest = (MessagesRequestBuilder()..guid = conversationWithUid).build();
       messageRequest.fetchPrevious(onSuccess: (List<BaseMessage> list) {
         chatData = list;
         notifyListeners();
@@ -187,14 +177,12 @@ class AppProvider extends ChangeNotifier {
 //get persons the user has chatted with
   conversationData() async {
     // log("called");
-    ConversationsRequest conversationRequest =
-        (ConversationsRequestBuilder()).build();
+    ConversationsRequest conversationRequest = (ConversationsRequestBuilder()).build();
 
-    conversationRequest.fetchNext(
-        onSuccess: (List<Conversation> conversations) {
+    conversationRequest.fetchNext(onSuccess: (List<Conversation> conversations) {
       listConversation = conversations;
       notifyListeners();
-      for (Conversation chat in listConversation!) {}
+      //for (Conversation chat in listConversation!) {}
     }, onError: (CometChatException e) {
       //listConversation = [];
       //notifyListeners();
@@ -224,8 +212,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   getWallet() async {
-    Response response = await HttpService.getRequest(Api.wallet,
-        bearerToken: true, accessToken: this.token);
+    Response response = await HttpService.getRequest(Api.wallet, bearerToken: true, accessToken: this.token);
     log(this.token);
     Map result = jsonDecode(response.body);
     log(result.toString());
@@ -233,9 +220,7 @@ class AppProvider extends ChangeNotifier {
       wallet = result["data"];
       notifyListeners();
     } else {
-      Get.defaultDialog(
-          title: "Error",
-          middleText: "There was an error getting user wallet details");
+      Get.defaultDialog(title: "Error", middleText: "There was an error getting user wallet details");
     }
   }
 

@@ -16,7 +16,7 @@ class CustomSticker extends StatelessWidget {
                 appBar: AppBar(
                   backgroundColor: appColor,
                   title: Text(
-                    "Undefined Stickers",
+                    "Custom Stickers",
                   ),
                   centerTitle: true,
                   leading: InkWell(
@@ -36,8 +36,7 @@ class CustomSticker extends StatelessWidget {
                     scrollDirection: Axis.vertical,
                     itemBuilder: (BuildContext context, int index) => InkWell(
                         onTap: () async {
-                          appProvider.setCustomSticker(
-                              appProvider.customStickers![index]);
+                          appProvider.setCustomSticker(appProvider.customStickers![index]);
                           Navigator.pop(context);
                         },
                         child: Stack(
@@ -47,8 +46,7 @@ class CustomSticker extends StatelessWidget {
                             ),
                           ],
                         )),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4, childAspectRatio: 1)),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: 1)),
               )
             : Center(child: Text("No stickers to show"))
         : Center(child: Text("Loading stickers..."));

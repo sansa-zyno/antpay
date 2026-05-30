@@ -1,0 +1,13 @@
+# CometChat Pro SDK
+-dontwarn com.cometchat.pro.rtc.CometChatRTCView$CometChatRTCViewBuilder
+-dontwarn com.cometchat.pro.rtc.CometChatRTCView
+-dontwarn com.cometchat.pro.rtc.CometChatRTCViewListener
+-dontwarn com.cometchat.pro.rtc.model.AnalyticsSettings
+-dontwarn com.cometchat.pro.rtc.model.AudioMode
+-dontwarn com.cometchat.pro.rtc.model.CallSwitchRequestInfo
+-dontwarn com.cometchat.pro.rtc.model.MainVideoContainerSetting
+-dontwarn com.cometchat.pro.rtc.model.RTCCallback
+-dontwarn com.cometchat.pro.rtc.model.RTCMutedUser
+-dontwarn com.cometchat.pro.rtc.model.RTCReceiver
+-dontwarn com.cometchat.pro.rtc.model.RTCRecordingInfo
+-dontwarn com.cometchat.pro.rtc.model.RTCUser

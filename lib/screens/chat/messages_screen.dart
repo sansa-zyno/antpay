@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:ant_pay/constants/app_images.dart' as img;
 
 class Messages extends StatefulWidget {
-  String username;
+  final String username;
   Messages({Key? key, required this.username}) : super(key: key);
   @override
   _MessagesState createState() => _MessagesState();
@@ -45,19 +45,14 @@ class _MessagesState extends State<Messages> {
                       itemCount: appProvider.listConversation!.length,
                       itemBuilder: (cxt, index) {
                         return ChatRoomListTile(
-                            id: appProvider
-                                .listConversation![index].conversationId!,
+                            id: appProvider.listConversation![index].conversationId!,
                             me: me!,
-                            conversationType: appProvider
-                                .listConversation![index].conversationType,
-                            lastMessage: appProvider
-                                .listConversation![index].lastMessage,
-                            conversationWith: appProvider
-                                .listConversation![index].conversationWith,
-                            unreadMessageCount: appProvider
-                                .listConversation![index].unreadMessageCount!);
+                            conversationType: appProvider.listConversation![index].conversationType,
+                            lastMessage: appProvider.listConversation![index].lastMessage,
+                            conversationWith: appProvider.listConversation![index].conversationWith,
+                            unreadMessageCount: appProvider.listConversation![index].unreadMessageCount!);
                       },
-                      separatorBuilder: (ctx, index) => Divider(),
+                      separatorBuilder: (ctx, index) => Divider(color: appColor.withOpacity(0.2)),
                     ),
                   )
                 ],
@@ -92,28 +87,20 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
     Duration dur = DateTime.now().difference(dt);
     print(dur.inHours);
     if (dur.inSeconds < 60) {
-      return dur.inSeconds == 1
-          ? "${dur.inSeconds} sec ago"
-          : "${dur.inSeconds} sec ago";
+      return dur.inSeconds == 1 ? "${dur.inSeconds} sec ago" : "${dur.inSeconds} sec ago";
     }
     if (dur.inMinutes >= 1 && dur.inMinutes < 60) {
-      return dur.inMinutes == 1
-          ? "${dur.inMinutes} min ago"
-          : "${dur.inMinutes} mins ago";
+      return dur.inMinutes == 1 ? "${dur.inMinutes} min ago" : "${dur.inMinutes} mins ago";
     }
     if (dur.inHours >= 1 && dur.inHours < 60) {
-      return dur.inHours == 1
-          ? "${dur.inHours} hour ago"
-          : "${dur.inHours} hours ago";
+      return dur.inHours == 1 ? "${dur.inHours} hour ago" : "${dur.inHours} hours ago";
     }
     if (dur.inHours > 60) {
-      DateTime dateNow =
-          DateTime.parse(DateTime.now().toString().substring(0, 10));
+      DateTime dateNow = DateTime.parse(DateTime.now().toString().substring(0, 10));
       DateTime dte = DateTime.parse(dt.toString().substring(0, 10));
       String date = dateNow.compareTo(dte) == 0
           ? "Today"
-          : "${dte.year} ${dte.month} ${dte.day}" ==
-                  "${dateNow.year} ${dateNow.month} ${(dateNow.day) - 1}"
+          : "${dte.year} ${dte.month} ${dte.day}" == "${dateNow.year} ${dateNow.month} ${(dateNow.day) - 1}"
               ? "Yesterday"
               : formatDate(dte, [M, ' ', dd, ', ', yyyy]);
       return date;
@@ -143,8 +130,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
 
       return InkWell(
         onTap: () {
-          CometChat.markAsDelivered(widget.lastMessage!,
-              onSuccess: (String unused) {
+          CometChat.markAsDelivered(widget.lastMessage!, onSuccess: (String unused) {
             debugPrint("markAsDelivered : $unused ");
           }, onError: (CometChatException e) {
             debugPrint("markAsDelivered unsuccessful : ${e.message} ");
@@ -156,8 +142,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
           });
           widget.conversationType == ConversationType.user
               ? appProvider.getChatData(user.uid, ConversationType.user, true)
-              : appProvider.getChatData(
-                  group.guid, ConversationType.group, true);
+              : appProvider.getChatData(group.guid, ConversationType.group, true);
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -181,48 +166,37 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                               height: 50,
                               width: 50,
                               decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Color(0xff6E01CE), width: 3),
+                                  border: Border.all(color: Color(0xff6E01CE), width: 3),
                                   shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                      image: NetworkImage(user.avatar!),
-                                      fit: BoxFit.cover)),
+                                  image: DecorationImage(image: NetworkImage(user.avatar!), fit: BoxFit.cover)),
                             )
                           : Container(
                               height: 50,
                               width: 50,
                               decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Color(0xff6E01CE), width: 3),
+                                  border: Border.all(color: Color(0xff6E01CE), width: 3),
                                   shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                      image: AssetImage(img.user),
-                                      fit: BoxFit.cover)),
+                                  image: DecorationImage(image: AssetImage(img.user), fit: BoxFit.cover)),
                             )
                       : group.icon != null && group.icon != ""
                           ? Container(
                               width: 50,
                               height: 50,
                               decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Color(0xff6E01CE), width: 3),
+                                  border: Border.all(color: Color(0xff6E01CE), width: 3),
                                   shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                      image: NetworkImage(group.icon!),
-                                      fit: BoxFit.cover)),
+                                  image: DecorationImage(image: NetworkImage(group.icon!), fit: BoxFit.cover)),
                             )
                           : Container(
                               width: 50,
                               height: 50,
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                border: Border.all(
-                                    color: Color(0xff6E01CE), width: 3),
+                                border: Border.all(color: Color(0xff6E01CE), width: 3),
                                 shape: BoxShape.circle,
                               ),
                               child: Center(
-                                child: Text(
-                                    group.name.substring(0, 2).toUpperCase()),
+                                child: Text(group.name.substring(0, 2).toUpperCase()),
                               ),
                             )
 
@@ -248,8 +222,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                   children: [
                     Builder(builder: (context) {
                       List Username = appProvider.contacts!.where((e) {
-                        return e["doc"]["uid"].toString().toLowerCase() ==
-                            user.uid;
+                        return e["doc"]["uid"].toString().toLowerCase() == user.uid;
                       }).toList();
                       return Text(
                         widget.conversationType == ConversationType.user
@@ -257,17 +230,13 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                                 ? Username[0]["name"]
                                 : user.name
                             : group.name,
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xff4B0973),
-                            fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 16, color: Color(0xff4B0973), fontWeight: FontWeight.bold),
                       );
                     }),
                     SizedBox(height: 5),
                     widget.lastMessage is TextMessage
                         ? Builder(builder: (context) {
-                            TextMessage message =
-                                widget.lastMessage as TextMessage;
+                            TextMessage message = widget.lastMessage as TextMessage;
 
                             return Row(
                               children: [
@@ -295,8 +264,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                                                 color: Colors.black54,
                                               ),
                                               Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 10),
+                                                padding: EdgeInsets.only(left: 10),
                                                 child: Icon(
                                                   Icons.check,
                                                   color: Colors.black54,
@@ -355,17 +323,11 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                               })
                             : widget.lastMessage is MediaMessage
                                 ? Builder(builder: (context) {
-                                    List imageExtensions = [
-                                      "jpg",
-                                      "png",
-                                      "jpeg"
-                                    ];
-                                    MediaMessage mediaMessage =
-                                        widget.lastMessage as MediaMessage;
+                                    List imageExtensions = ["jpg", "png", "jpeg"];
+                                    MediaMessage mediaMessage = widget.lastMessage as MediaMessage;
                                     log(mediaMessage.attachment!.fileExtension);
                                     return Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
                                         mediaMessage.readAt != null
                                             ? Stack(
@@ -375,8 +337,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                                                     color: appColor,
                                                   ),
                                                   Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 10),
+                                                    padding: EdgeInsets.only(left: 10),
                                                     child: Icon(
                                                       Icons.check,
                                                       color: appColor,
@@ -392,9 +353,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                                                         color: Colors.black54,
                                                       ),
                                                       Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                left: 10),
+                                                        padding: EdgeInsets.only(left: 10),
                                                         child: Icon(
                                                           Icons.check,
                                                           color: Colors.black54,
@@ -409,29 +368,22 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                                         SizedBox(
                                           width: 5,
                                         ),
-                                        imageExtensions.contains(mediaMessage
-                                                .attachment!.fileExtension)
+                                        imageExtensions.contains(mediaMessage.attachment!.fileExtension)
                                             ? Icon(Icons.photo)
                                             : Icon(Icons.file_present_sharp),
                                         SizedBox(
                                           width: 5,
                                         ),
-                                        imageExtensions.contains(mediaMessage
-                                                .attachment!.fileExtension)
+                                        imageExtensions.contains(mediaMessage.attachment!.fileExtension)
                                             ? CustomText(text: "Photo")
                                             : Expanded(
-                                                child: CustomText(
-                                                    text: mediaMessage
-                                                        .attachment!.fileUrl
-                                                        .split("/")
-                                                        .last),
+                                                child: CustomText(text: mediaMessage.attachment!.fileUrl.split("/").last),
                                               ),
                                       ],
                                     );
                                   })
                                 : Builder(builder: (context) {
-                                    Action? action =
-                                        widget.lastMessage as Action?;
+                                    Action? action = widget.lastMessage as Action?;
                                     log(action.toString());
                                     return Container(
                                       width: 200,
@@ -441,8 +393,7 @@ class _ChatRoomListTileState extends State<ChatRoomListTile> {
                                                 Expanded(
                                                   child: Text(
                                                     action.message,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                                    overflow: TextOverflow.ellipsis,
                                                     softWrap: true,
                                                     style: TextStyle(
                                                       color: Colors.blue,
